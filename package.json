@@ -1,0 +1,26 @@
+{
+  "name": "cafecito-pos",
+  "version": "1.0.0",
+  "description": "��#\u0000 \u0000C\u0000a\u0000f\u0000e\u0000c\u0000i\u0000t\u0000o\u0000 \u0000P\u0000O\u0000S\u0000\r\u0000 \u0000",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend start",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/walterrkz/cafecito-pos.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/walterrkz/cafecito-pos/issues"
+  },
+  "homepage": "https://github.com/walterrkz/cafecito-pos#readme",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
