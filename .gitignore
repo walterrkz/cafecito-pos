@@ -110,7 +110,7 @@ public
 
 # Angular
 .angular/
-.cache/
+**/.angular/
 
 # OS
 .DS_Store
