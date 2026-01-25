@@ -3,15 +3,15 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-export const db_connection = async () => {
+export const dbConnection = async () => {
   try {
     const conn = await mongoose.connect(process.env.MONGODB_URI);
-    console.log("✅ MongoDB conectado en", conn.connection.host);
+    console.log("✅ MongoDB connected at", conn.connection.host);
     return conn;
   } catch (error) {
-    console.error("❌ Error conectando a MongoDB:", error);
+    console.error("❌ Error connecting to MongoDB:", error);
     process.exit(1);
   }
 };
 
-export default db_connection;
+export default dbConnection;
