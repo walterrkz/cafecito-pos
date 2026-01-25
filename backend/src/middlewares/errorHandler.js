@@ -18,12 +18,7 @@ const errorHandler = (err, req, res, next) => {
     errorResponse.details = err.details;
   }
 
-  const logMessage =
-    `${new Date().toISOString()} | ` +
-    `${req.method} ${req.originalUrl} | ` +
-    `${statusCode} | ` +
-    `${err.message} | ` +
-    `${err.stack}\n`;
+  const logMessage = `${new Date().toISOString()} | ${req.method} ${req.originalUrl} | ${statusCode} | ${err.message} | ${err.stack}\n`;
 
   const logDir = path.dirname(logFilePath);
   if (!fs.existsSync(logDir)) {
