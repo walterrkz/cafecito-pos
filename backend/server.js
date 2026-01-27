@@ -3,6 +3,7 @@ import setupGlobalErrorHandlers from "./src/middlewares/globalErrorHandler.js";
 import express from "express";
 import dbConnection from "./src/config/database.js";
 import logger from "./src/middlewares/logger.js";
+import cors from "cors";
 import routes from "./src/routes/index.js";
 import errorHandler from "./src/middlewares/errorHandler.js";
 
@@ -14,6 +15,15 @@ const app = express();
 dbConnection();
 
 app.use(logger);
+console.log("CORS ORIGIN:", process.env.FRONT_APP_URL);
+app.use(
+  cors({
+    origin: process.env.FRONT_APP_URL,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    credentials: true,
+    optionsSuccessStatus: 200,
+  })
+);
 app.use(express.json());
 
 app.get("/", (req, res) => {
