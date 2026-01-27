@@ -1,18 +1,18 @@
 import dotenv from "dotenv";
-import setupGlobalErrorHandlers from "./src/middlewares/globalErrorHandler.js";
+import setup_global_error_handlers from "./src/middlewares/global_error_handler.js";
 import express from "express";
-import dbConnection from "./src/config/database.js";
+import db_connection from "./src/config/database.js";
 import logger from "./src/middlewares/logger.js";
 import cors from "cors";
 import routes from "./src/routes/index.js";
-import errorHandler from "./src/middlewares/errorHandler.js";
+import error_handler from "./src/middlewares/error_handler.js";
 
 dotenv.config();
 
-setupGlobalErrorHandlers();
+setup_global_error_handlers();
 
 const app = express();
-dbConnection();
+db_connection();
 
 app.use(logger);
 console.log("CORS ORIGIN:", process.env.FRONT_APP_URL);
@@ -40,7 +40,7 @@ app.use((req, res) => {
   });
 });
 
-app.use(errorHandler);
+app.use(error_handler);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server running at http://localhost:${process.env.PORT} ✅`);

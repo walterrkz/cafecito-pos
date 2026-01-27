@@ -1,8 +1,8 @@
 const logger = (req, res, next) => {
-  const startTime = Date.now();
+  const start_time = Date.now();
 
   res.on("finish", () => {
-    const duration = Date.now() - startTime;
+    const duration = Date.now() - start_time;
 
     console.log(
       `[${new Date().toISOString()}] ${req.method} ${req.originalUrl} → ${res.statusCode} ${duration}ms`,

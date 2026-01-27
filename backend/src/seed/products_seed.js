@@ -50,7 +50,7 @@ const products = [
   { name: "Café Carajillo", price: 72, stock: 10 },
 ];
 
-async function seedProducts() {
+async function seed_products() {
   try {
     await mongoose.connect(process.env.MONGODB_URI);
 
@@ -68,4 +68,4 @@ async function seedProducts() {
   }
 }
 
-seedProducts();
+seed_products();
