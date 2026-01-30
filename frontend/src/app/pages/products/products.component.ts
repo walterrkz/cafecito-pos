@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ProductsResponse } from '../../core/types/Products';
-import { ProductsService } from '../../core/services/products.service';
+import { ProductsService } from '../../core/services/products/products.service';
 import { AsyncPipe } from '@angular/common';
 
 @Component({

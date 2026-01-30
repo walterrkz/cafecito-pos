@@ -36,7 +36,9 @@
     </p>
 
     @for (product of response.data; track product.id) {
+
       <article class="product-card">
+        {{product.id}}
         <h3>{{ product.name }}</h3>
         <p>Price: ${{ product.price }}</p>
         <p>Stock: {{ product.stock }}</p>

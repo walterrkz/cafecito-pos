@@ -193,4 +193,24 @@ async function refresh_tokens(req, res, next) {
   }
 }
 
-export { login, refresh_tokens };
+async function logout(req, res, next) {
+  try {
+    const { refresh_token } = req.body;
+
+    const decoded = jwt.verify(
+      refresh_token,
+      process.env.JWT_REFRESH_SECRET,
+      { ignoreExpiration: true }
+    );
+
+    refresh_store.delete(String(decoded.user_id));
+
+    return res.status(200).json({
+      message: "Logout successful",
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export { login, refresh_tokens, logout };

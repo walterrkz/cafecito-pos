@@ -2,11 +2,12 @@ import express from "express";
 import { query } from "express-validator";
 import validate from "../middlewares/validation.js";
 import { get_products } from "../controllers/product_controller.js";
+import auth_middleware from "../middlewares/auth_middleware.js"
 
 const router = express.Router();
 
 router.get(
-  "/",
+  "/",auth_middleware,
   [
     query("page")
       .optional()

@@ -1,7 +1,7 @@
 import express from "express";
 import { body } from "express-validator";
 import validate from "../middlewares/validation.js";
-import { login, refresh_tokens } from "../controllers/auth_controller.js";
+import { login, refresh_tokens, logout } from "../controllers/auth_controller.js";
 
 const router = express.Router();
 
@@ -30,12 +30,25 @@ router.post(
   [
     body("refresh_token")
       .notEmpty()
-      .withMessage("Refresh token is required")
+      .withMessage("Missing or invalid authorization token, please login.")
       .isString()
-      .withMessage("Refresh token must be a string"),
+      .withMessage("Missing or invalid authorization token, please login."),
   ],
   validate,
   refresh_tokens,
+);
+
+router.post(
+  "/logout",
+  [
+    body("refresh_token")
+      .notEmpty()
+      .withMessage("Missing or invalid authorization token, please login.")
+      .isString()
+      .withMessage("Missing or invalid authorization token, please login."),
+  ],
+  validate,
+  logout
 );
 
 export default router;
