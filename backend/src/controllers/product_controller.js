@@ -19,8 +19,18 @@ async function get_products(req, res, next) {
 
     const total_results = await Product.countDocuments(filters);
 
+    const parsed_products = products.map((product) => {
+      const obj = product.toObject();
+
+      return {
+        ...obj,
+        id: obj._id.toString(),
+        _id: undefined,
+      };
+    });
+
     return res.status(200).json({
-      data: products,
+      data: parsed_products,
       total: total_results,
       page: Number(page),
       limit: Number(limit),

@@ -101,10 +101,9 @@ async function refresh_tokens(req, res, next) {
 
     if (!user) {
       return res.status(401).json({
-        error: "Unauthorized, authentication required",
+        error: "Authentication required",
         details: [
           {
-            field: "refresh_token",
             message: "Missing or invalid authorization token",
           },
         ],
@@ -115,10 +114,9 @@ async function refresh_tokens(req, res, next) {
 
     if (!stored) {
       return res.status(401).json({
-        error: "Unauthorized, authentication required",
+        error: "Authentication required",
         details: [
           {
-            field: "refresh_token",
             message: "Missing or invalid authorization token",
           },
         ],
@@ -127,10 +125,9 @@ async function refresh_tokens(req, res, next) {
 
     if (stored.refresh_token !== refresh_token) {
       return res.status(401).json({
-        error: "Unauthorized, authentication required",
+        error: "Authentication required",
         details: [
           {
-            field: "refresh_token",
             message: "Missing or invalid authorization token",
           },
         ],
@@ -140,10 +137,9 @@ async function refresh_tokens(req, res, next) {
     if (stored.expires_at < new Date()) {
       refresh_store.delete(String(user._id));
       return res.status(401).json({
-        error: "Unauthorized, authentication required",
+        error: "Authentication required",
         details: [
           {
-            field: "refresh_token",
             message: "Missing or invalid authorization token",
           },
         ],
@@ -180,10 +176,9 @@ async function refresh_tokens(req, res, next) {
   } catch (error) {
     if (error.name === "JsonWebTokenError" || error.name === "NotBeforeError") {
       return res.status(401).json({
-        error: "Unauthorized, authentication required",
+        error: "Authentication required",
         details: [
           {
-            field: "refresh_token",
             message: "Missing or invalid authorization token",
           },
         ],
@@ -197,13 +192,17 @@ async function logout(req, res, next) {
   try {
     const { refresh_token } = req.body;
 
-    const decoded = jwt.verify(
-      refresh_token,
-      process.env.JWT_REFRESH_SECRET,
-      { ignoreExpiration: true }
-    );
+    if (refresh_token) {
+      const decoded = jwt.verify(
+        refresh_token,
+        process.env.JWT_REFRESH_SECRET,
+        {
+          ignoreExpiration: true,
+        },
+      );
 
-    refresh_store.delete(String(decoded.user_id));
+      refresh_store.delete(String(decoded.user_id));
+    }
 
     return res.status(200).json({
       message: "Logout successful",

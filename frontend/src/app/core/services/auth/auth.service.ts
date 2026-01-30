@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, map, Observable, tap } from 'rxjs';
+import { BehaviorSubject, finalize, map, Observable, tap } from 'rxjs';
 import { AuthResponse } from '../../types/Auth';
 
 @Injectable({
@@ -46,10 +46,14 @@ export class AuthService {
 
   logout(): Observable<void> {
     const refresh_token = this.refreshToken;
-    this.clearSession();
 
     return this.httpClient
-      .post<void>(`${this.apiUrl}/logout`, { refresh_token });
+      .post<void>(`${this.apiUrl}/logout`, { refresh_token })
+      .pipe(
+        finalize(() => {
+          this.clearSession();
+        }),
+      );
   }
 
   private mapAuthResponse(tokens: any): AuthResponse {

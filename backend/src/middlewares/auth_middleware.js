@@ -9,7 +9,6 @@ const auth_middleware = (req, res, next) => {
         error: "Unauthorized",
         details: [
           {
-            field: "refresh_token",
             message: "Missing or invalid authorization token",
           },
         ],
