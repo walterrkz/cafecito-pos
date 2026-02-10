@@ -8,22 +8,24 @@ import { FormsModule } from '@angular/forms';
   imports: [FormsModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
-  standalone: true
+  standalone: true,
 })
 export class LoginComponent {
   email = '';
   password = '';
   loading = false;
-  error: string | null = null;
+  errors: string[] = [];
+
+  private errorTimeoutId?: number;
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
   ) {}
 
   onSubmit(): void {
     this.loading = true;
-    this.error = null;
+    this.errors = [];
 
     this.authService.login(this.email, this.password).subscribe({
       next: () => {
@@ -32,30 +34,32 @@ export class LoginComponent {
       },
       error: (err) => {
         this.loading = false;
-        this.error = this.parseError(err);
+        this.errors = this.parseErrors(err);
+
+        if (this.errorTimeoutId !== undefined) {
+          clearTimeout(this.errorTimeoutId);
+        }
+
+        this.errorTimeoutId = window.setTimeout(() => {
+          this.errors = [];
+        }, 3000);
       },
     });
   }
 
-  private parseError(err: any): string {
-    if (err?.error?.details?.length) {
-      return err.error.details[0].message;
+  private parseErrors(err: any): string[] {
+    if (Array.isArray(err?.error?.details)) {
+      return err.error.details.map((d: any) => d?.message).filter(Boolean);
     }
+
     if (err?.error?.message) {
-      return err.error.message;
+      return [err.error.message];
     }
-    return 'Login failed';
-  }
 
-  onLogout(): void {
-    this.authService.logout().subscribe({
-      next: () => {
-        this.router.navigate(['/login']);
-      },
-      error: () => {
-        // aunque falle backend, cerramos sesión local
-        this.router.navigate(['/login']);
-      },
-    });
+    if (typeof err?.error?.error === 'string') {
+      return [err.error.error];
+    }
+
+    return ['Login failed'];
   }
 }
