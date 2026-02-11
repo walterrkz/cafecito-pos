@@ -14,7 +14,15 @@ export class AuthService {
     localStorage.getItem('access_token'),
   );
 
-  constructor(private httpClient: HttpClient) {}
+  private isAuth$ = new BehaviorSubject<boolean>(false);
+  private isAdmin$ = new BehaviorSubject<boolean>(false);
+
+  isAuthChanges$ = this.isAuth$.asObservable();
+  isAdminChanges$ = this.isAdmin$.asObservable();
+
+  constructor(private httpClient: HttpClient) {
+    this.syncAuthState();
+  }
 
   get accessToken(): string | null {
     return this.accessToken$.value;
@@ -23,6 +31,10 @@ export class AuthService {
   get refreshToken(): string | null {
     return localStorage.getItem('refresh_token');
   }
+
+  get isAuthenticated(): boolean {
+  return this.isAuth$.value;
+}
 
   login(email: string, password: string): Observable<AuthResponse> {
     return this.httpClient
@@ -67,11 +79,49 @@ export class AuthService {
     localStorage.setItem('access_token', auth.accessToken);
     localStorage.setItem('refresh_token', auth.refreshToken);
     this.accessToken$.next(auth.accessToken);
+
+    this.syncAuthState();
   }
 
   private clearSession(): void {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     this.accessToken$.next(null);
+
+    this.syncAuthState();
+  }
+
+  private getTokenPayload(): any | null {
+    const token = this.accessToken$.value;;
+    if (!token) return null;
+
+    try {
+      const payloadBase64 = token.split('.')[1];
+      const payloadJson = atob(payloadBase64);
+      return JSON.parse(payloadJson);
+    } catch {
+      return null;
+    }
+  }
+
+  private syncAuthState(): void {
+    const payload = this.getTokenPayload();
+
+    if (!payload) {
+      this.isAuth$.next(false);
+      this.isAdmin$.next(false);
+      return;
+    }
+
+    const isTokenValid = payload.exp && Date.now() < payload.exp * 1000;
+
+    if (!isTokenValid) {
+      this.isAuth$.next(false);
+      this.isAdmin$.next(false);
+      return;
+    }
+
+    this.isAuth$.next(true);
+    this.isAdmin$.next(payload.role === 'admin');
   }
 }

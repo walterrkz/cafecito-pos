@@ -1,3 +1,11 @@
+@if (authService.isAuthChanges$ | async) {
+  <h1>Usuario autenticado</h1>
+}
+
+@if (authService.isAdminChanges$ | async) {
+  <h2>Administrador</h2>
+}
+
 <section class="products-page">
   <h1>Products</h1>
 

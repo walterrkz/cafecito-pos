@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 import { ProductsResponse } from '../../core/types/Products';
 import { ProductsService } from '../../core/services/products/products.service';
 import { AsyncPipe } from '@angular/common';
+import { AuthService } from '../../core/services/auth/auth.service';
 
 @Component({
   selector: 'app-products',
@@ -14,11 +15,14 @@ import { AsyncPipe } from '@angular/common';
 export class ProductsComponent {
   products$!: Observable<ProductsResponse>;
 
-  constructor(private productsService: ProductsService) {
+  constructor(
+    private productsService: ProductsService,
+    public authService: AuthService,
+  ) {
     this.loadProducts();
   }
 
-  loadProducts(q?:string, page: number = 1, limit: number = 20) {
+  loadProducts(q?: string, page: number = 1, limit: number = 20) {
     this.products$ = this.productsService.getProducts(q, page, limit);
   }
 }

@@ -1,11 +1,13 @@
 import { Routes } from '@angular/router';
 import { ProductsComponent } from './pages/products/products.component';
 import { LoginComponent } from './pages/auth/login/login.component';
+import { loginGuard } from './core/guards/login.guard';
 
 export const routes: Routes = [
   {
     path: 'login',
     component: LoginComponent,
+    canActivate:[loginGuard]
   },
   {
     path: 'products',
