@@ -1,7 +1,7 @@
 import express from "express";
 import { query } from "express-validator";
-import validate from "../middlewares/validation.js";
 import { get_products } from "../controllers/product_controller.js";
+import query_validate from "../middlewares/query_validation.js"
 
 const router = express.Router();
 
@@ -18,7 +18,7 @@ router.get(
       .isInt({ min: 1, max: 100 })
       .withMessage("Limit must be a number between 1 and 100"),
   ],
-  validate,
+  query_validate,
   get_products,
 );
 
