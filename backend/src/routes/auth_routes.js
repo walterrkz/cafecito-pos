@@ -14,16 +14,16 @@ router.post(
   [
     body("email")
       .notEmpty()
-      .withMessage("Email is required")
+      .withMessage("email is required")
       .isEmail()
-      .withMessage("Email must be a valid email")
+      .withMessage("email must be a valid email")
       .normalizeEmail(),
 
     body("password")
       .notEmpty()
-      .withMessage("Password is required")
+      .withMessage("password is required")
       .isLength({ min: 6 })
-      .withMessage("Password must be at least 6 characters"),
+      .withMessage("password must be at least 6 characters"),
   ],
   validate,
   login,
@@ -34,9 +34,9 @@ router.post(
   [
     body("refresh_token")
       .notEmpty()
-      .withMessage("Missing or invalid authorization token.")
+      .withMessage("missing or invalid authorization token.")
       .isString()
-      .withMessage("Missing or invalid authorization token."),
+      .withMessage("missing or invalid authorization token."),
   ],
   validate,
   refresh_tokens,

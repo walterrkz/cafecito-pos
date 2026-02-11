@@ -40,4 +40,34 @@ async function get_products(req, res, next) {
   }
 }
 
-export { get_products };
+async function create_product(req, res, next) {
+  try {
+    const { name, price, stock } = req.body;
+
+    const product_exist = await Product.findOne({ name });
+
+    if (product_exist) {
+      return res.status(400).json({
+        error: "Bad request",
+        details: [
+          {
+            field: "name",
+            message: "Product name already exists",
+          },
+        ],
+      });
+    }
+
+    const new_product = await Product.create({
+      name,
+      price,
+      stock,
+    });
+
+    res.status(201).json(new_product);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export { get_products, create_product };
