@@ -16,9 +16,11 @@ export class AuthService {
 
   private isAuth$ = new BehaviorSubject<boolean>(false);
   private isAdmin$ = new BehaviorSubject<boolean>(false);
+  private userName$ = new BehaviorSubject<string | null>(null);
 
   isAuthChanges$ = this.isAuth$.asObservable();
   isAdminChanges$ = this.isAdmin$.asObservable();
+  userNameChanges$ = this.userName$.asObservable();
 
   constructor(private httpClient: HttpClient) {
     this.syncAuthState();
@@ -110,6 +112,7 @@ export class AuthService {
     if (!payload) {
       this.isAuth$.next(false);
       this.isAdmin$.next(false);
+      this.userName$.next(null);
       return;
     }
 
@@ -118,10 +121,12 @@ export class AuthService {
     if (!isTokenValid) {
       this.isAuth$.next(false);
       this.isAdmin$.next(false);
+      this.userName$.next(null);
       return;
     }
 
     this.isAuth$.next(true);
     this.isAdmin$.next(payload.role === 'admin');
+    this.userName$.next(payload.user_name ?? null);
   }
 }

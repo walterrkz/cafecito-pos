@@ -1,0 +1,25 @@
+<aside class="sidebar">
+  <h1>Cafecito</h1>
+
+  @if (isAuth$ | async) {
+
+    <div class="sidebar-header">
+      <p>Bienvenido, {{ userName$ | async }}</p>
+    </div>
+
+    <nav>
+      <a routerLink="/products">Productos</a>
+    </nav>
+
+    <button class="logout-btn" (click)="logout()">
+      Logout
+    </button>
+
+  } @else {
+
+    <nav>
+      <a routerLink="/login">Login</a>
+    </nav>
+
+  }
+</aside>
