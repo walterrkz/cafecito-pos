@@ -18,8 +18,14 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status !== 401 || error.error.error !== 'Unauthorized') {
+      if (error.status !== 401) {
         return throwError(() => error);
+      }
+
+      if (req.url.includes('/auth/refresh')) {
+        return authService
+          .logout()
+          .pipe(switchMap(() => throwError(() => error)));
       }
 
       const refreshToken = authService.refreshToken;
@@ -31,6 +37,12 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       }
 
       return authService.refreshTokens().pipe(
+        catchError((refreshError) => {
+          return authService
+            .logout()
+            .pipe(switchMap(() => throwError(() => refreshError)));
+        }),
+
         switchMap(() => {
           const newAccessToken = authService.accessToken;
 
@@ -48,12 +60,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
           return next(retryReq);
         }),
-
-        catchError((refreshError) =>
-          authService
-            .logout()
-            .pipe(switchMap(() => throwError(() => refreshError))),
-        ),
       );
     }),
   );

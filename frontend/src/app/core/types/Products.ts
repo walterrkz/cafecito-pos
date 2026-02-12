@@ -13,3 +13,9 @@ export type ProductsResponse = {
   page: number;
   limit: number;
 };
+
+export type CreateProductDto = {
+  name: string;
+  price: number;
+  stock: number;
+};

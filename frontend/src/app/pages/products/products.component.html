@@ -1,63 +1,118 @@
-@if (authService.isAuthChanges$ | async) {
-  <h1>Usuario autenticado</h1>
-}
+<section class="products-wrapper">
+  @if (authService.isAuthenticated && authService.isAdmin) {
+    <div class="mode-bar">
+      <button class="mode-toggle" (click)="toggleViewMode()">
+        Switch to {{ viewMode === "admin" ? "Vendor" : "Admin" }} View
+      </button>
 
-@if (authService.isAdminChanges$ | async) {
-  <h2>Administrador</h2>
-}
+      @if (viewMode === "admin") {
+        <button class="create-button" (click)="showCreateModal = true">
+          Create Product
+        </button>
+      }
+    </div>
+  }
 
-<section class="products-page">
-  <h1>Products</h1>
+  <div class="filters">
+    <div class="filter-group search-group">
+      <label>Search</label>
+      <input type="text" [(ngModel)]="search" (input)="loadProducts()" />
+    </div>
 
-  <div class="controls">
-    <input
-      type="text"
-      placeholder="Search product..."
-      #searchInput
-      (input)="loadProducts(searchInput.value, +pageInput.value, +limitInput.value)"
-    />
+    <div class="filter-group small-group">
+      <label>Page</label>
+      <input
+        type="number"
+        min="1"
+        step="1"
+        [(ngModel)]="page"
+        (change)="loadProducts()"
+      />
+    </div>
 
-    <input
-      type="number"
-      min="1"
-      placeholder="Page"
-      value="1"
-      #pageInput
-      (change)="loadProducts(searchInput.value, +pageInput.value, +limitInput.value)"
-    />
-
-    <input
-      type="number"
-      min="1"
-      max="100"
-      placeholder="Limit"
-      value="20"
-      #limitInput
-      (change)="loadProducts(searchInput.value, +pageInput.value, +limitInput.value)"
-    />
+    <div class="filter-group small-group">
+      <label>Limit</label>
+      <input
+        type="number"
+        min="1"
+        max="100"
+        step="1"
+        [(ngModel)]="limit"
+        (change)="loadProducts()"
+      />
+    </div>
   </div>
 
-  @if (products$ | async; as response) {
+  @if (loading) {
+    <p class="state-message">Loading products...</p>
+  }
 
-    <p>
-      Showing {{ response.data.length }} of {{ response.total }} products
+  @if (errors.length && !loading) {
+    <div class="error-box">
+      @for (error of errors; track error) {
+        <p class="error-message">{{ error }}</p>
+      }
+    </div>
+  }
+
+  @if (!loading && !errors.length) {
+    <p class="results-info">
+      Showing {{ products.length }} of {{ total }} products
     </p>
 
-    @for (product of response.data; track product.id) {
-
-      <article class="product-card">
-        {{product.id}}
-        <h3>{{ product.name }}</h3>
-        <p>Price: ${{ product.price }}</p>
-        <p>Stock: {{ product.stock }}</p>
-      </article>
+    @if (products.length === 0) {
+      <p class="state-message">No products found</p>
+    } @else {
+      <div class="products-grid">
+        @for (product of products; track product.id) {
+          <app-product-card
+            [product]="product"
+            [isAuth]="authService.isAuthenticated"
+            [isAdmin]="authService.isAdmin"
+            [viewMode]="viewMode"
+          ></app-product-card>
+        }
+      </div>
     }
-
-    @if (response.data.length === 0) {
-      <p>No products found</p>
-    }
-
-  } @else {
-    <p>Loading products...</p>
   }
 </section>
+
+@if (showCreateModal) {
+  <app-modal (close)="showCreateModal = false">
+    <h3>Create Product</h3>
+
+    @if (createErrors.length) {
+      <div class="error-box">
+        @for (error of createErrors; track error) {
+          <p class="error-message">{{ error }}</p>
+        }
+      </div>
+    }
+
+    <div class="form-group">
+      <label>Name</label>
+      <input type="text" [(ngModel)]="newName" />
+    </div>
+
+    <div class="form-group">
+      <label>Price</label>
+      <input type="number" step="0.01" [(ngModel)]="newPrice" min="0.01"/>
+    </div>
+
+    <div class="form-group">
+      <label>Stock</label>
+      <input type="number" [(ngModel)]="newStock" min=0/>
+    </div>
+
+    <div class="modal-actions">
+      <button
+        class="primary"
+        (click)="createProduct()"
+        [disabled]="createLoading"
+      >
+        {{ createLoading ? "Creating..." : "Create" }}
+      </button>
+      <button (click)="showCreateModal = false">Cancel</button>
+    </div>
+  </app-modal>
+}

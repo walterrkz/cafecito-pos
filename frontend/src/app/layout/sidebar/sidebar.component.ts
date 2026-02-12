@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AuthService } from '../../../core/services/auth/auth.service';
+import { AuthService } from '../../core/services/auth/auth.service';
 import { AsyncPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 

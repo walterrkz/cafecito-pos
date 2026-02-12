@@ -10,24 +10,22 @@ import { AuthResponse } from '../../types/Auth';
 export class AuthService {
   private readonly apiUrl = `${environment.apiUrl}/auth`;
 
-  private accessToken$ = new BehaviorSubject<string | null>(
-    localStorage.getItem('access_token'),
-  );
-
   private isAuth$ = new BehaviorSubject<boolean>(false);
   private isAdmin$ = new BehaviorSubject<boolean>(false);
   private userName$ = new BehaviorSubject<string | null>(null);
+  private role$ = new BehaviorSubject<'admin' | 'vendor' | 'guest'>('guest');
 
   isAuthChanges$ = this.isAuth$.asObservable();
   isAdminChanges$ = this.isAdmin$.asObservable();
   userNameChanges$ = this.userName$.asObservable();
+  roleChanges$ = this.role$.asObservable();
 
   constructor(private httpClient: HttpClient) {
     this.syncAuthState();
   }
 
   get accessToken(): string | null {
-    return this.accessToken$.value;
+    return localStorage.getItem('access_token');
   }
 
   get refreshToken(): string | null {
@@ -35,8 +33,16 @@ export class AuthService {
   }
 
   get isAuthenticated(): boolean {
-  return this.isAuth$.value;
-}
+    return this.isAuth$.value;
+  }
+
+  get isAdmin(): boolean {
+    return this.isAdmin$.value;
+  }
+
+  get role(): 'admin' | 'vendor' | 'guest' {
+    return this.role$.value;
+  }
 
   login(email: string, password: string): Observable<AuthResponse> {
     return this.httpClient
@@ -80,21 +86,17 @@ export class AuthService {
   private setSession(auth: AuthResponse): void {
     localStorage.setItem('access_token', auth.accessToken);
     localStorage.setItem('refresh_token', auth.refreshToken);
-    this.accessToken$.next(auth.accessToken);
-
     this.syncAuthState();
   }
 
   private clearSession(): void {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
-    this.accessToken$.next(null);
-
     this.syncAuthState();
   }
 
   private getTokenPayload(): any | null {
-    const token = this.accessToken$.value;;
+    const token = localStorage.getItem('access_token');
     if (!token) return null;
 
     try {
@@ -113,6 +115,7 @@ export class AuthService {
       this.isAuth$.next(false);
       this.isAdmin$.next(false);
       this.userName$.next(null);
+      this.role$.next('guest');
       return;
     }
 
@@ -122,11 +125,13 @@ export class AuthService {
       this.isAuth$.next(false);
       this.isAdmin$.next(false);
       this.userName$.next(null);
+      this.role$.next('guest');
       return;
     }
 
     this.isAuth$.next(true);
     this.isAdmin$.next(payload.role === 'admin');
     this.userName$.next(payload.user_name ?? null);
+    this.role$.next(payload.role ?? 'guest');
   }
 }

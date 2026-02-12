@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ProductsResponse } from '../../types/Products';
+import { Product, ProductsResponse } from '../../types/Products';
 
 @Injectable({
   providedIn: 'root',
@@ -24,5 +24,13 @@ export class ProductsService {
     }
 
     return this.httpClient.get<ProductsResponse>(this.apiUrl, { params });
+  }
+
+  createProduct(data: {
+    name: string;
+    price: number;
+    stock: number;
+  }): Observable<Product> {
+    return this.httpClient.post<Product>(this.apiUrl, data);
   }
 }

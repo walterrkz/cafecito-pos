@@ -6,7 +6,7 @@ const auth_middleware = (req, res, next) => {
   jwt.verify(token, process.env.JWT_ACCESS_SECRET, (err, decoded) => {
     if (err) {
       return res.status(401).json({
-        error: "Unauthorized",
+        error: "Authentication required",
         details: [
           {
             message: "Missing or invalid authorization token",

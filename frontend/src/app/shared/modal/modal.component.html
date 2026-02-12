@@ -1,0 +1,11 @@
+<div class="modal-backdrop" (click)="onBackdropClick($event)">
+  <div class="modal-box">
+
+    <button class="modal-close" (click)="close.emit()">
+      ×
+    </button>
+
+    <ng-content></ng-content>
+
+  </div>
+</div>
