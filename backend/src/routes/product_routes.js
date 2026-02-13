@@ -3,6 +3,7 @@ import { query, body } from "express-validator";
 import {
   get_products,
   create_product,
+  update_product,
 } from "../controllers/product_controller.js";
 import query_validate from "../middlewares/query_validation.js";
 import auth_middleware from "../middlewares/auth_middleware.js";
@@ -58,6 +59,30 @@ router.post(
   ],
   validate,
   create_product,
+);
+
+router.put(
+  "/:id",
+  auth_middleware,
+  is_admin,
+  [
+    body("price")
+      .notEmpty()
+      .withMessage("price is required")
+      .isFloat({ gt: 0 })
+      .withMessage("price must be a number greater than 0")
+      .matches(/^\d+(\.\d{1,2})?$/)
+      .withMessage("price can have maximum 2 decimal places")
+      .toFloat(),
+
+    body("stock")
+      .notEmpty()
+      .withMessage("stock is required")
+      .isInt({ min: 0 })
+      .withMessage("stock must be an integer greater than or equal to 0"),
+  ],
+  validate,
+  update_product,
 );
 
 export default router;

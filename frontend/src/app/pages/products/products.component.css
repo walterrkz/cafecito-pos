@@ -151,3 +151,25 @@
   color: #fff;
   border: none;
 }
+
+.success-screen {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 220px;
+  text-align: center;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.success-screen h3 {
+  margin: 0 0 0.5rem;
+  color: #166534;
+}
+
+.success-screen p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-muted);
+}

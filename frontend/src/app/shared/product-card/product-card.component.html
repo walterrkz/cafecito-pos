@@ -1,38 +1,26 @@
 <div class="product-card">
-
   <h3 class="product-name">
     {{ product.name }}
   </h3>
 
   <p class="product-price">
-    {{ product.price | currency:'MXN':'symbol':'1.2-2' }}
+    {{ product.price | currency: "MXN" : "symbol" : "1.2-2" }}
   </p>
 
-  <p class="product-stock">
-    Stock: {{ product.stock }}
-  </p>
+  <p class="product-stock">Stock: {{ product.stock }}</p>
 
-  @if (isAuth && !isAdmin) {
+  @if (isAuth && (!isAdmin || viewMode === "vendor")) {
     <div class="card-actions">
-      <button class="action-button primary">
-        Add to Cart
+      <button class="action-button primary">Add to Cart</button>
+    </div>
+  }
+
+  @if (isAuth && isAdmin && viewMode === "admin") {
+    <div class="card-actions">
+      <button class="action-button" (click)="edit.emit(product)">Edit</button>
+      <button class="action-button danger" (click)="delete.emit(product)">
+        Delete
       </button>
     </div>
   }
-
-  @if (isAuth && isAdmin && viewMode === 'admin') {
-    <div class="card-actions">
-      <button class="action-button">Edit</button>
-      <button class="action-button danger">Delete</button>
-    </div>
-  }
-
-  @if (isAuth && isAdmin && viewMode === 'vendor') {
-    <div class="card-actions">
-      <button class="action-button primary">
-        Add to Cart
-      </button>
-    </div>
-  }
-
 </div>

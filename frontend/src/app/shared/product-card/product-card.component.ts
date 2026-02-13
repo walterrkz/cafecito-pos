@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Product } from '../../core/types/Products';
 import { CurrencyPipe } from '@angular/common';
 
@@ -14,4 +14,7 @@ export class ProductCardComponent {
   @Input() isAuth!: boolean;
   @Input() isAdmin!: boolean;
   @Input() viewMode!: 'admin' | 'vendor';
+
+  @Output() edit = new EventEmitter<Product>();
+  @Output() delete = new EventEmitter<Product>();
 }

@@ -70,6 +70,7 @@
             [isAuth]="authService.isAuthenticated"
             [isAdmin]="authService.isAdmin"
             [viewMode]="viewMode"
+            (edit)="openEditModal($event)"
           ></app-product-card>
         }
       </div>
@@ -79,40 +80,91 @@
 
 @if (showCreateModal) {
   <app-modal (close)="showCreateModal = false">
-    <h3>Create Product</h3>
+    @if (!createSuccess) {
+      <h3>Create Product</h3>
 
-    @if (createErrors.length) {
-      <div class="error-box">
-        @for (error of createErrors; track error) {
-          <p class="error-message">{{ error }}</p>
-        }
+      @if (createErrors.length) {
+        <div class="error-box">
+          @for (error of createErrors; track error) {
+            <p class="error-message">{{ error }}</p>
+          }
+        </div>
+      }
+
+      <div class="form-group">
+        <label>Name</label>
+        <input type="text" [(ngModel)]="newName" />
+      </div>
+
+      <div class="form-group">
+        <label>Price</label>
+        <input type="number" step="0.01" [(ngModel)]="newPrice" />
+      </div>
+
+      <div class="form-group">
+        <label>Stock</label>
+        <input type="number" [(ngModel)]="newStock" />
+      </div>
+
+      <div class="modal-actions">
+        <button
+          class="primary"
+          (click)="createProduct()"
+          [disabled]="createLoading"
+        >
+          {{ createLoading ? "Creating..." : "Create" }}
+        </button>
+        <button (click)="resetCreateModal()">Cancel</button>
+      </div>
+    } @else {
+      <div class="success-screen" (click)="resetCreateModal()">
+        <h3>Product created successfully</h3>
+        <p>Click anywhere to close</p>
       </div>
     }
+  </app-modal>
+}
+@if (showEditModal) {
+  <app-modal (close)="resetEditModal()">
+    @if (!editSuccess) {
+      <h3>Edit {{ editName }}</h3>
+      <p style="font-size: 0.8rem; color: var(--color-muted)">
+        ID: {{ editId }}
+      </p>
 
-    <div class="form-group">
-      <label>Name</label>
-      <input type="text" [(ngModel)]="newName" />
-    </div>
+      @if (editErrors.length) {
+        <div class="error-box">
+          @for (error of editErrors; track error) {
+            <p class="error-message">{{ error }}</p>
+          }
+        </div>
+      }
 
-    <div class="form-group">
-      <label>Price</label>
-      <input type="number" step="0.01" [(ngModel)]="newPrice" min="0.01"/>
-    </div>
+      <div class="form-group">
+        <label>Price</label>
+        <input type="number" step="0.01" [(ngModel)]="editPrice" />
+      </div>
 
-    <div class="form-group">
-      <label>Stock</label>
-      <input type="number" [(ngModel)]="newStock" min=0/>
-    </div>
+      <div class="form-group">
+        <label>Stock</label>
+        <input type="number" [(ngModel)]="editStock" />
+      </div>
 
-    <div class="modal-actions">
-      <button
-        class="primary"
-        (click)="createProduct()"
-        [disabled]="createLoading"
-      >
-        {{ createLoading ? "Creating..." : "Create" }}
-      </button>
-      <button (click)="showCreateModal = false">Cancel</button>
-    </div>
+      <div class="modal-actions">
+        <button
+          class="primary"
+          (click)="updateProduct()"
+          [disabled]="editLoading"
+        >
+          {{ editLoading ? "Updating..." : "Update" }}
+        </button>
+        <button (click)="resetEditModal()">Cancel</button>
+      </div>
+    } @else {
+      <div class="success-screen" (click)="resetEditModal()">
+        <h3>Product updated successfully</h3>
+        <p>Click anywhere to close</p>
+      </div>
+    }
   </app-modal>
 }

@@ -33,4 +33,14 @@ export class ProductsService {
   }): Observable<Product> {
     return this.httpClient.post<Product>(this.apiUrl, data);
   }
+
+  updateProduct(
+    id: string,
+    data: {
+      price: number;
+      stock: number;
+    },
+  ): Observable<Product> {
+    return this.httpClient.put<Product>(`${this.apiUrl}/${id}`, data);
+  }
 }

@@ -70,4 +70,25 @@ async function create_product(req, res, next) {
   }
 }
 
-export { get_products, create_product };
+async function update_product(req, res, next) {
+  try {
+    const { id } = req.params;
+    const { price, stock } = req.body;
+
+    const updated_product = await Product.findByIdAndUpdate(
+      id,
+      { price, stock },
+      { new: true },
+    );
+
+    if (!updated_product) {
+      return res.status(404).json({ error: "Product not found", id });
+    }
+
+    res.status(200).json(updated_product);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export { get_products, create_product, update_product };

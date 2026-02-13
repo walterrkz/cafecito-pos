@@ -33,6 +33,24 @@ export class ProductsComponent {
 
   createErrors: string[] = [];
   createLoading = false;
+  private createErrorTimeoutId?: number;
+
+  createSuccess = false;
+  private createSuccessTimeoutId?: number;
+
+  showEditModal = false;
+
+  editId = '';
+  editName = '';
+  editPrice = 0;
+  editStock = 0;
+
+  editLoading = false;
+  editErrors: string[] = [];
+  editSuccess = false;
+
+  private editErrorTimeoutId?: number;
+  private editSuccessTimeoutId?: number;
 
   constructor(
     private productsService: ProductsService,
@@ -85,18 +103,36 @@ export class ProductsComponent {
       .subscribe({
         next: () => {
           this.createLoading = false;
-          this.showCreateModal = false;
-          this.resetCreateForm();
+          this.createSuccess = true;
+
+          if (this.createSuccessTimeoutId) {
+            clearTimeout(this.createSuccessTimeoutId);
+          }
+
+          this.createSuccessTimeoutId = window.setTimeout(() => {
+            this.resetCreateModal();
+          }, 5000);
+
           this.loadProducts();
         },
         error: (err) => {
           this.createLoading = false;
           this.createErrors = this.parseErrors(err);
+
+          if (this.createErrorTimeoutId) {
+            clearTimeout(this.createErrorTimeoutId);
+          }
+
+          this.createErrorTimeoutId = window.setTimeout(() => {
+            this.createErrors = [];
+          }, 3000);
         },
       });
   }
 
-  private resetCreateForm(): void {
+  resetCreateModal(): void {
+    this.showCreateModal = false;
+    this.createSuccess = false;
     this.newName = '';
     this.newPrice = 0;
     this.newStock = 0;
@@ -116,5 +152,64 @@ export class ProductsComponent {
     }
 
     return ['Failed to load products'];
+  }
+
+  updateProduct(): void {
+    this.editLoading = true;
+    this.editErrors = [];
+
+    this.productsService
+      .updateProduct(this.editId, {
+        price: this.editPrice,
+        stock: this.editStock,
+      })
+      .subscribe({
+        next: () => {
+          this.editLoading = false;
+          this.editSuccess = true;
+
+          this.loadProducts();
+
+          if (this.editSuccessTimeoutId) {
+            clearTimeout(this.editSuccessTimeoutId);
+          }
+
+          this.editSuccessTimeoutId = window.setTimeout(() => {
+            this.resetEditModal();
+          }, 5000);
+        },
+        error: (err) => {
+          this.editLoading = false;
+          this.editErrors = this.parseErrors(err);
+
+          if (this.editErrorTimeoutId) {
+            clearTimeout(this.editErrorTimeoutId);
+          }
+
+          this.editErrorTimeoutId = window.setTimeout(() => {
+            this.editErrors = [];
+          }, 3000);
+        },
+      });
+  }
+
+  openEditModal(product: Product): void {
+    this.editId = product.id;
+    this.editName = product.name;
+    this.editPrice = product.price;
+    this.editStock = product.stock;
+
+    this.editErrors = [];
+    this.editSuccess = false;
+    this.showEditModal = true;
+  }
+
+  resetEditModal(): void {
+    this.showEditModal = false;
+    this.editSuccess = false;
+    this.editId = '';
+    this.editName = '';
+    this.editPrice = 0;
+    this.editStock = 0;
   }
 }
