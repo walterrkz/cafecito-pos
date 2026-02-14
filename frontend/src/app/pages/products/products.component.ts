@@ -19,7 +19,7 @@ export class ProductsComponent {
      VIEW STATE
   ================================== */
 
-  viewMode: 'admin' | 'vendor' = 'admin';
+  viewMode: 'admin' | 'vendor' = 'vendor';
 
   products: Product[] = [];
   total = 0;

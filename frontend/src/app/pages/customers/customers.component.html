@@ -1,9 +1,7 @@
 <section class="customers-wrapper">
   <div class="customers-bar">
     <div></div>
-    <button class="create-button">
-      Create User
-    </button>
+    <button class="create-button">Create User</button>
   </div>
 
   <div class="customers-filters">
@@ -74,7 +72,10 @@
                 <td>{{ customer.phoneOrEmail }}</td>
                 <td>{{ customer.purchasesCount }}</td>
                 <td>
-                  <button class="action-button">
+                  <button
+                    class="action-button"
+                    (click)="viewCustomer(customer.id)"
+                  >
                     View User
                   </button>
                 </td>

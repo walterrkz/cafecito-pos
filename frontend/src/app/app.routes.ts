@@ -4,6 +4,7 @@ import { LoginComponent } from './pages/auth/login/login.component';
 import { loginGuard } from './core/guards/login/login.guard';
 import { CustomersComponent } from './pages/customers/customers.component';
 import { authGuard } from './core/guards/auth/auth.guard';
+import { CustomerDetailComponent } from './pages/customers/customer-detail/customer-detail.component';
 
 export const routes: Routes = [
   {

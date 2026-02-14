@@ -26,7 +26,7 @@ export class CustomersService {
     return this.httpClient.get<CustomersResponse>(this.apiUrl, { params });
   }
 
-  getCustomerById(id: string): Observable<void> {
-    return this.httpClient.get<void>(`${this.apiUrl}/${id}`);
+  getCustomerById(id: string): Observable<Customer> {
+    return this.httpClient.get<Customer>(`${this.apiUrl}/${id}`);
   }
 }

@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Customer, CustomersResponse } from '../../core/types/Customers';
 import { CustomersService } from '../../core/services/customers/customers.service';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-customers',
@@ -20,7 +21,10 @@ export class CustomersComponent {
   loading = false;
   errors: string[] = [];
 
-  constructor(private customersService: CustomersService) {
+  constructor(
+    private customersService: CustomersService,
+    private router: Router,
+  ) {
     this.loadCustomers();
   }
 
@@ -51,6 +55,10 @@ export class CustomersComponent {
       });
   }
 
+  viewCustomer(id: string): void {
+    this.router.navigate(['/customers', id]);
+  }
+
   private parseErrors(err: any): string[] {
     if (Array.isArray(err?.error?.details)) {
       return err.error.details.map((d: any) => d?.message).filter(Boolean);
@@ -65,11 +73,5 @@ export class CustomersComponent {
     }
 
     return ['Unexpected error'];
-  }
-
-  private clearTimeout(timeoutId?: number): void {
-    if (timeoutId) {
-      window.clearTimeout(timeoutId);
-    }
   }
 }
