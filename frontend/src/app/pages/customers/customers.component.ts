@@ -3,14 +3,21 @@ import { Customer, CustomersResponse } from '../../core/types/Customers';
 import { CustomersService } from '../../core/services/customers/customers.service';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ModalComponent } from '../../shared/modal/modal.component';
 
 @Component({
   selector: 'app-customers',
-  imports: [FormsModule],
+  imports: [FormsModule, ModalComponent],
   templateUrl: './customers.component.html',
   styleUrl: './customers.component.css',
+  standalone: true,
 })
 export class CustomersComponent {
+
+  /* ================================
+     LIST STATE
+  ================================== */
+
   customers: Customer[] = [];
   total = 0;
 
@@ -21,6 +28,26 @@ export class CustomersComponent {
   loading = false;
   errors: string[] = [];
 
+  /* ================================
+     CREATE MODAL STATE
+  ================================== */
+
+  showCreateModal = false;
+
+  newName = '';
+  newPhoneOrEmail = '';
+
+  createLoading = false;
+  createErrors: string[] = [];
+  createSuccess = false;
+
+  private createErrorTimeoutId?: number;
+  private createSuccessTimeoutId?: number;
+
+  /* ================================
+     CONSTRUCTOR
+  ================================== */
+
   constructor(
     private customersService: CustomersService,
     private router: Router,
@@ -28,11 +55,16 @@ export class CustomersComponent {
     this.loadCustomers();
   }
 
+  /* ================================
+     LIST METHODS
+  ================================== */
+
   loadCustomers(
     q: string = this.search,
     page: number = this.page,
     limit: number = this.limit,
   ): void {
+
     this.loading = true;
     this.errors = [];
 
@@ -59,6 +91,55 @@ export class CustomersComponent {
     this.router.navigate(['/customers', id]);
   }
 
+  /* ================================
+     CREATE METHODS
+  ================================== */
+
+  createCustomer(): void {
+
+    this.createLoading = true;
+    this.createErrors = [];
+
+    this.customersService
+      .createCustomer({
+        name: this.newName,
+        phoneOrEmail: this.newPhoneOrEmail,
+      })
+      .subscribe({
+        next: () => {
+          this.createLoading = false;
+          this.createSuccess = true;
+
+          this.loadCustomers();
+
+          this.clearTimeout(this.createSuccessTimeoutId);
+          this.createSuccessTimeoutId = window.setTimeout(() => {
+            this.resetCreateModal();
+          }, 5000);
+        },
+        error: (err) => {
+          this.createLoading = false;
+          this.createErrors = this.parseErrors(err);
+
+          this.clearTimeout(this.createErrorTimeoutId);
+          this.createErrorTimeoutId = window.setTimeout(() => {
+            this.createErrors = [];
+          }, 3000);
+        },
+      });
+  }
+
+  resetCreateModal(): void {
+    this.showCreateModal = false;
+    this.createSuccess = false;
+    this.newName = '';
+    this.newPhoneOrEmail = '';
+  }
+
+  /* ================================
+     PRIVATE UTILITIES
+  ================================== */
+
   private parseErrors(err: any): string[] {
     if (Array.isArray(err?.error?.details)) {
       return err.error.details.map((d: any) => d?.message).filter(Boolean);
@@ -73,5 +154,11 @@ export class CustomersComponent {
     }
 
     return ['Unexpected error'];
+  }
+
+  private clearTimeout(timeoutId?: number): void {
+    if (timeoutId) {
+      window.clearTimeout(timeoutId);
+    }
   }
 }

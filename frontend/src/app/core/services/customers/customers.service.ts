@@ -29,4 +29,11 @@ export class CustomersService {
   getCustomerById(id: string): Observable<Customer> {
     return this.httpClient.get<Customer>(`${this.apiUrl}/${id}`);
   }
+
+  createCustomer(data: {
+    name: string;
+    phoneOrEmail: string;
+  }): Observable<Customer> {
+    return this.httpClient.post<Customer>(this.apiUrl, data);
+  }
 }

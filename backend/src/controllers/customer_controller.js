@@ -76,4 +76,45 @@ async function get_customer_by_id(req, res, next) {
   }
 }
 
-export { get_customers, get_customer_by_id };
+async function create_customer(req, res, next) {
+  try {
+    const { name, phoneOrEmail: phone_or_email } = req.body;
+
+    const customer_exist = await Customer.findOne({ phone_or_email });
+
+    if (customer_exist) {
+      return res.status(400).json({
+        error: "Bad request",
+        details: [
+          {
+            field: "phone_or_email",
+            message: "Customer with this phone or email already exists",
+          },
+        ],
+      });
+    }
+
+    const new_customer = await Customer.create({
+      name,
+      phone_or_email,
+    });
+
+    const obj = new_customer.toObject();
+
+    const parsed_customer = {
+      ...obj,
+      id: obj._id.toString(),
+      _id: undefined,
+      phoneOrEmail: obj.phone_or_email,
+      phone_or_email: undefined,
+      purchasesCount: obj.purchases_count,
+      purchases_count: undefined,
+    };
+
+    res.status(201).json(parsed_customer);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export { get_customers, get_customer_by_id, create_customer };

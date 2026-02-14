@@ -65,7 +65,15 @@ async function create_product(req, res, next) {
       stock,
     });
 
-    res.status(201).json(new_product);
+    const obj = new_product.toObject();
+
+    const parsed_product = {
+      ...obj,
+      id: obj._id.toString(),
+      _id: undefined,
+    };
+
+    res.status(201).json(parsed_product);
   } catch (error) {
     next(error);
   }
@@ -86,7 +94,15 @@ async function update_product(req, res, next) {
       return res.status(404).json({ error: "Product not found", id });
     }
 
-    res.status(200).json(updated_product);
+    const obj = updated_product.toObject();
+
+    const parsed_product = {
+      ...obj,
+      id: obj._id.toString(),
+      _id: undefined,
+    };
+
+    res.status(200).json(parsed_product);
   } catch (error) {
     next(error);
   }
