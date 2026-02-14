@@ -1,0 +1,138 @@
+.customers-wrapper {
+  padding: 2rem;
+}
+
+.customers-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.create-button {
+  padding: 0.5rem 0.9rem;
+  font-size: 0.85rem;
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+}
+
+.customers-filters {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.search-group {
+  flex: 1;
+  min-width: 220px;
+}
+
+.small-group {
+  width: 100px;
+}
+
+.filter-group label {
+  font-size: 0.8rem;
+  color: var(--color-muted);
+}
+
+.filter-group input {
+  padding: 0.6rem 0.75rem;
+  font-size: 0.9rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  color: var(--color-text);
+}
+
+.filter-group input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.results-info {
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: var(--color-muted);
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.customers-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--color-surface);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+}
+
+.customers-table th,
+.customers-table td {
+  padding: 0.9rem 1rem;
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+.customers-table thead {
+  background: #f3f4f6;
+}
+
+.customers-table th {
+  font-weight: 600;
+  color: var(--color-text);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.customers-table tbody tr {
+  border-bottom: 1px solid var(--color-border);
+  transition: background 0.2s ease;
+}
+
+.customers-table tbody tr:hover {
+  background: #f9fafb;
+}
+
+.action-button {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.8rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+}
+
+.action-button:hover {
+  border-color: var(--color-primary);
+}
+
+.state-message {
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  color: var(--color-muted);
+}
+
+.error-box {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  border-radius: 6px;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+}
+
+.error-message {
+  margin: 0.25rem 0;
+  font-size: 0.875rem;
+  color: #991b1b;
+}

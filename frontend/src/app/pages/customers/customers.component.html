@@ -1,0 +1,88 @@
+<section class="customers-wrapper">
+  <div class="customers-bar">
+    <div></div>
+    <button class="create-button">
+      Create User
+    </button>
+  </div>
+
+  <div class="customers-filters">
+    <div class="filter-group search-group">
+      <label>Search</label>
+      <input type="text" [(ngModel)]="search" (input)="loadCustomers()" />
+    </div>
+
+    <div class="filter-group small-group">
+      <label>Page</label>
+      <input
+        type="number"
+        min="1"
+        step="1"
+        [(ngModel)]="page"
+        (change)="loadCustomers()"
+      />
+    </div>
+
+    <div class="filter-group small-group">
+      <label>Limit</label>
+      <input
+        type="number"
+        min="1"
+        step="1"
+        [(ngModel)]="limit"
+        (change)="loadCustomers()"
+      />
+    </div>
+  </div>
+
+  @if (loading) {
+    <p class="state-message">Loading customers...</p>
+  }
+
+  @if (errors.length && !loading) {
+    <div class="error-box">
+      @for (error of errors; track error) {
+        <p class="error-message">{{ error }}</p>
+      }
+    </div>
+  }
+
+  @if (!loading && !errors.length) {
+    <p class="results-info">
+      Showing {{ customers.length }} of {{ total }} customers
+    </p>
+
+    @if (customers.length === 0) {
+      <p class="state-message">No customers found</p>
+    } @else {
+      <div class="table-wrapper">
+        <table class="customers-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Phone / Email</th>
+              <th>Purchases</th>
+              <th>View User</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (customer of customers; track customer.id; let i = $index) {
+              <tr>
+                <td>{{ (page - 1) * limit + i + 1 }}</td>
+                <td>{{ customer.name }}</td>
+                <td>{{ customer.phoneOrEmail }}</td>
+                <td>{{ customer.purchasesCount }}</td>
+                <td>
+                  <button class="action-button">
+                    View User
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+</section>

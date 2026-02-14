@@ -108,7 +108,7 @@ export class AuthService {
     }
   }
 
-  private syncAuthState(): void {
+  public syncAuthState(): void {
     const payload = this.getTokenPayload();
 
     if (!payload) {
