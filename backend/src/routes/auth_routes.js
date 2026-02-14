@@ -32,7 +32,7 @@ router.post(
 router.post(
   "/refresh",
   [
-    body("refresh_token")
+    body("refreshToken")
       .notEmpty()
       .withMessage("missing or invalid authorization token.")
       .isString()

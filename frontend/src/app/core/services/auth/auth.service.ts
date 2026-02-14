@@ -25,11 +25,11 @@ export class AuthService {
   }
 
   get accessToken(): string | null {
-    return localStorage.getItem('access_token');
+    return localStorage.getItem('accessToken');
   }
 
   get refreshToken(): string | null {
-    return localStorage.getItem('refresh_token');
+    return localStorage.getItem('refreshToken');
   }
 
   get isAuthenticated(): boolean {
@@ -46,29 +46,25 @@ export class AuthService {
 
   login(email: string, password: string): Observable<AuthResponse> {
     return this.httpClient
-      .post<any>(`${this.apiUrl}/login`, { email, password })
+      .post<AuthResponse>(`${this.apiUrl}/login`, { email, password })
       .pipe(
-        map(this.mapAuthResponse),
         tap((auth) => this.setSession(auth)),
       );
   }
 
   refreshTokens(): Observable<AuthResponse> {
     return this.httpClient
-      .post<any>(`${this.apiUrl}/refresh`, {
-        refresh_token: this.refreshToken,
+      .post<AuthResponse>(`${this.apiUrl}/refresh`, {
+        refreshToken: this.refreshToken,
       })
       .pipe(
-        map(this.mapAuthResponse),
         tap((auth) => this.setSession(auth)),
       );
   }
 
   logout(): Observable<void> {
-    const refresh_token = this.refreshToken;
-
     return this.httpClient
-      .post<void>(`${this.apiUrl}/logout`, { refresh_token })
+      .post<void>(`${this.apiUrl}/logout`, { refreshToken: this.refreshToken, })
       .pipe(
         finalize(() => {
           this.clearSession();
@@ -76,27 +72,20 @@ export class AuthService {
       );
   }
 
-  private mapAuthResponse(tokens: any): AuthResponse {
-    return {
-      accessToken: tokens.access_token,
-      refreshToken: tokens.refresh_token,
-    };
-  }
-
   private setSession(auth: AuthResponse): void {
-    localStorage.setItem('access_token', auth.accessToken);
-    localStorage.setItem('refresh_token', auth.refreshToken);
+    localStorage.setItem('accessToken', auth.accessToken);
+    localStorage.setItem('refreshToken', auth.refreshToken);
     this.syncAuthState();
   }
 
   private clearSession(): void {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
     this.syncAuthState();
   }
 
   private getTokenPayload(): any | null {
-    const token = localStorage.getItem('access_token');
+    const token = localStorage.getItem('accessToken');
     if (!token) return null;
 
     try {

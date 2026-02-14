@@ -20,15 +20,14 @@ async function get_products(req, res, next) {
 
     const total_results = await Product.countDocuments(filters);
 
-    const parsed_products = products.map((product) => {
-      const obj = product.toObject();
-
-      return {
-        ...obj,
-        id: obj._id.toString(),
-        _id: undefined,
-      };
-    });
+    const parsed_products = products.map((product) => ({
+      id: product._id.toString(),
+      name: product.name,
+      price: product.price,
+      stock: product.stock,
+      createdAt: product.createdAt,
+      updatedAt: product.updatedAt,
+    }));
 
     return res.status(200).json({
       data: parsed_products,
@@ -65,15 +64,14 @@ async function create_product(req, res, next) {
       stock,
     });
 
-    const obj = new_product.toObject();
-
-    const parsed_product = {
-      ...obj,
-      id: obj._id.toString(),
-      _id: undefined,
-    };
-
-    res.status(201).json(parsed_product);
+    return res.status(201).json({
+      id: new_product._id.toString(),
+      name: new_product.name,
+      price: new_product.price,
+      stock: new_product.stock,
+      createdAt: new_product.createdAt,
+      updatedAt: new_product.updatedAt,
+    });
   } catch (error) {
     next(error);
   }
@@ -94,15 +92,14 @@ async function update_product(req, res, next) {
       return res.status(404).json({ error: "Product not found", id });
     }
 
-    const obj = updated_product.toObject();
-
-    const parsed_product = {
-      ...obj,
-      id: obj._id.toString(),
-      _id: undefined,
-    };
-
-    res.status(200).json(parsed_product);
+    return res.status(200).json({
+      id: updated_product._id.toString(),
+      name: updated_product.name,
+      price: updated_product.price,
+      stock: updated_product.stock,
+      createdAt: updated_product.createdAt,
+      updatedAt: updated_product.updatedAt,
+    });
   } catch (error) {
     next(error);
   }

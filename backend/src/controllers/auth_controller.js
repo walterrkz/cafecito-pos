@@ -81,8 +81,8 @@ async function login(req, res, next) {
     });
 
     return res.status(200).json({
-      access_token,
-      refresh_token,
+      accessToken: access_token,
+      refreshToken: refresh_token,
     });
   } catch (error) {
     next(error);
@@ -91,7 +91,7 @@ async function login(req, res, next) {
 
 async function refresh_tokens(req, res, next) {
   try {
-    const { refresh_token } = req.body;
+    const { refreshToken: refresh_token } = req.body;
 
     const decoded = jwt.verify(refresh_token, process.env.JWT_REFRESH_SECRET, {
       ignoreExpiration: true,
@@ -170,8 +170,8 @@ async function refresh_tokens(req, res, next) {
     });
 
     return res.status(200).json({
-      access_token: new_access_token,
-      refresh_token: new_refresh_token,
+      accessToken: new_access_token,
+      refreshToken: new_refresh_token,
     });
   } catch (error) {
     if (error.name === "JsonWebTokenError" || error.name === "NotBeforeError") {
@@ -190,7 +190,7 @@ async function refresh_tokens(req, res, next) {
 
 async function logout(req, res, next) {
   try {
-    const { refresh_token } = req.body;
+    const { refreshToken: refresh_token } = req.body;
 
     if (refresh_token) {
       const decoded = jwt.verify(

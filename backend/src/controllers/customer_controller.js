@@ -24,16 +24,13 @@ async function get_customers(req, res, next) {
     const total_results = await Customer.countDocuments(filters);
 
     const parsed_customers = customers.map((customer) => {
-      const obj = customer.toObject();
-
       return {
-        ...obj,
-        id: obj._id.toString(),
-        _id: undefined,
-        phoneOrEmail: obj.phone_or_email,
-        phone_or_email: undefined,
-        purchasesCount: obj.purchases_count,
-        purchases_count: undefined,
+        id: customer._id.toString(),
+        name: customer.name,
+        phoneOrEmail: customer.phone_or_email,
+        purchasesCount: customer.purchases_count,
+        createdAt: customer.createdAt,
+        updatedAt: customer.updatedAt,
       };
     });
 
@@ -58,19 +55,14 @@ async function get_customer_by_id(req, res, next) {
       return res.status(404).json({ error: "Customer not found", id });
     }
 
-    const obj = customer.toObject();
-
-    const parsed_customer = {
-      ...obj,
-      id: obj._id.toString(),
-      _id: undefined,
-      phoneOrEmail: obj.phone_or_email,
-      phone_or_email: undefined,
-      purchasesCount: obj.purchases_count,
-      purchases_count: undefined,
-    };
-
-    res.status(200).json(parsed_customer);
+    return res.status(200).json({
+      id: customer._id.toString(),
+      name: customer.name,
+      phoneOrEmail: customer.phone_or_email,
+      purchasesCount: customer.purchases_count,
+      createdAt: customer.createdAt,
+      updatedAt: customer.updatedAt,
+    });
   } catch (error) {
     next(error);
   }
@@ -89,6 +81,7 @@ async function create_customer(req, res, next) {
           {
             field: "phone_or_email",
             message: "Customer with this phone or email already exists",
+            existingCustomerId: customer_exist.id,
           },
         ],
       });
@@ -99,19 +92,14 @@ async function create_customer(req, res, next) {
       phone_or_email,
     });
 
-    const obj = new_customer.toObject();
-
-    const parsed_customer = {
-      ...obj,
-      id: obj._id.toString(),
-      _id: undefined,
-      phoneOrEmail: obj.phone_or_email,
-      phone_or_email: undefined,
-      purchasesCount: obj.purchases_count,
-      purchases_count: undefined,
-    };
-
-    res.status(201).json(parsed_customer);
+    return res.status(201).json({
+      id: new_customer._id.toString(),
+      name: new_customer.name,
+      phoneOrEmail: new_customer.phone_or_email,
+      purchasesCount: new_customer.purchases_count,
+      createdAt: new_customer.createdAt,
+      updatedAt: new_customer.updatedAt,
+    });
   } catch (error) {
     next(error);
   }
