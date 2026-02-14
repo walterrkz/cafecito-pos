@@ -48,4 +48,32 @@ async function get_customers(req, res, next) {
   }
 }
 
-export { get_customers };
+async function get_customer_by_id(req, res, next) {
+  try {
+    const { id } = req.params;
+
+    const customer = await Customer.findById(id);
+
+    if (!customer) {
+      return res.status(404).json({ error: "Customer not found", id });
+    }
+
+    const obj = customer.toObject();
+
+    const parsed_customer = {
+      ...obj,
+      id: obj._id.toString(),
+      _id: undefined,
+      phoneOrEmail: obj.phone_or_email,
+      phone_or_email: undefined,
+      purchasesCount: obj.purchases_count,
+      purchases_count: undefined,
+    };
+
+    res.status(200).json(parsed_customer);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export { get_customers, get_customer_by_id };

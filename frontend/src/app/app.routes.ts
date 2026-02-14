@@ -21,6 +21,11 @@ export const routes: Routes = [
     canActivate:[authGuard]
   },
   {
+  path: 'customers/:id',
+  component: CustomerDetailComponent,
+  canActivate: [authGuard],
+},
+  {
     path: '',
     redirectTo: 'products',
     pathMatch: 'full',
