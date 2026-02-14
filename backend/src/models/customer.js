@@ -1,58 +1,29 @@
 import mongoose from "mongoose";
 
-const sale_item_schema = new mongoose.Schema(
+const customer_schema = new mongoose.Schema(
   {
-    product_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Product",
-    },
-    product_name: {
+    name: {
       type: String,
+      required: true,
+      trim: true,
+      minLength: 2,
+      maxLength: 100,
     },
-    quantity: {
-      type: Number,
-    },
-    unit_price: {
-      type: Number,
-    },
-    line_total: {
-      type: Number,
-    },
-  },
-  { _id: false }
-);
-
-const sale_schema = new mongoose.Schema(
-  {
-    customer_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Customer",
-      default: null,
-    },
-    payment_method: {
+    phone_or_email: {
       type: String,
-      default: "cash",
+      required: true,
+      trim: true,
+      unique: true,
     },
-    items: [sale_item_schema],
-
-    subtotal: {
-      type: Number,
-    },
-    discount_percent: {
+    purchases_count: {
       type: Number,
       default: 0,
-    },
-    discount_amount: {
-      type: Number,
-      default: 0,
-    },
-    total: {
-      type: Number,
+      min: 0,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-const Sale = mongoose.model("Sale", sale_schema);
+const Customer = mongoose.model("Customer", customer_schema);
 
-export default Sale;
+export default Customer;
