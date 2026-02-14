@@ -71,6 +71,7 @@
             [isAdmin]="authService.isAdmin"
             [viewMode]="viewMode"
             (edit)="openEditModal($event)"
+            (delete)="openDeleteModal($event)"
           ></app-product-card>
         }
       </div>
@@ -78,8 +79,12 @@
   }
 </section>
 
+<!-- ================================
+     CREATE MODAL
+================================== -->
+
 @if (showCreateModal) {
-  <app-modal (close)="showCreateModal = false">
+  <app-modal (close)="resetCreateModal()">
     @if (!createSuccess) {
       <h3>Create Product</h3>
 
@@ -124,13 +129,16 @@
     }
   </app-modal>
 }
+
+<!-- ================================
+     EDIT MODAL
+================================== -->
+
 @if (showEditModal) {
   <app-modal (close)="resetEditModal()">
     @if (!editSuccess) {
       <h3>Edit {{ editName }}</h3>
-      <p style="font-size: 0.8rem; color: var(--color-muted)">
-        ID: {{ editId }}
-      </p>
+      <p class="modal-id">ID: {{ editId }}</p>
 
       @if (editErrors.length) {
         <div class="error-box">
@@ -163,6 +171,47 @@
     } @else {
       <div class="success-screen" (click)="resetEditModal()">
         <h3>Product updated successfully</h3>
+        <p>Click anywhere to close</p>
+      </div>
+    }
+  </app-modal>
+}
+
+<!-- ================================
+     DELETE MODAL
+================================== -->
+
+@if (showDeleteModal) {
+  <app-modal (close)="resetDeleteModal()">
+    @if (!deleteSuccess) {
+      <h3>Delete Product</h3>
+      <p class="modal-id">ID: {{ deleteId }}</p>
+      <p class="delete-warning">
+        Are you sure you want to delete <strong>{{ deleteName }}</strong
+        >?
+      </p>
+
+      @if (deleteErrors.length) {
+        <div class="error-box">
+          @for (error of deleteErrors; track error) {
+            <p class="error-message">{{ error }}</p>
+          }
+        </div>
+      }
+
+      <div class="modal-actions">
+        <button
+          class="danger"
+          (click)="deleteProduct()"
+          [disabled]="deleteLoading"
+        >
+          {{ deleteLoading ? "Deleting..." : "Delete" }}
+        </button>
+        <button (click)="resetDeleteModal()">Cancel</button>
+      </div>
+    } @else {
+      <div class="success-screen" (click)="resetDeleteModal()">
+        <h3>Product deleted successfully</h3>
         <p>Click anywhere to close</p>
       </div>
     }

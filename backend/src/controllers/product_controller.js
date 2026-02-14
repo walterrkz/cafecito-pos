@@ -13,6 +13,7 @@ async function get_products(req, res, next) {
     const skip = (Number(page) - 1) * Number(limit);
 
     const products = await Product.find(filters)
+      .collation({ locale: "en", strength: 1 })
       .sort({ name: 1 })
       .skip(skip)
       .limit(Number(limit));
@@ -91,4 +92,26 @@ async function update_product(req, res, next) {
   }
 }
 
-export { get_products, create_product, update_product };
+async function delete_product(req, res, next) {
+  try {
+    const { id } = req.params;
+
+    const deleted_product = await Product.findByIdAndDelete(id);
+
+    if (!deleted_product) {
+      return res.status(404).json({
+        error: "Product not found",
+        id,
+      });
+    }
+
+    return res.status(200).json({
+      message: "Product deleted successfully",
+      id,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export { get_products, create_product, update_product, delete_product };

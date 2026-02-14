@@ -1,9 +1,10 @@
 import express from "express";
-import { query, body } from "express-validator";
+import { query, body, param } from "express-validator";
 import {
   get_products,
   create_product,
   update_product,
+  delete_product,
 } from "../controllers/product_controller.js";
 import query_validate from "../middlewares/query_validation.js";
 import auth_middleware from "../middlewares/auth_middleware.js";
@@ -66,6 +67,8 @@ router.put(
   auth_middleware,
   is_admin,
   [
+    param("id").isMongoId().withMessage("Invalid product id"),
+
     body("price")
       .notEmpty()
       .withMessage("price is required")
@@ -83,6 +86,15 @@ router.put(
   ],
   validate,
   update_product,
+);
+
+router.delete(
+  "/:id",
+  auth_middleware,
+  is_admin,
+  [param("id").isMongoId().withMessage("Invalid product id")],
+  validate,
+  delete_product,
 );
 
 export default router;

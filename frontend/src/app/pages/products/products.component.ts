@@ -14,10 +14,16 @@ import { ModalComponent } from '../../shared/modal/modal.component';
   standalone: true,
 })
 export class ProductsComponent {
+
+  /* ================================
+     VIEW STATE
+  ================================== */
+
   viewMode: 'admin' | 'vendor' = 'admin';
 
   products: Product[] = [];
   total = 0;
+
   search = '';
   page = 1;
   limit = 20;
@@ -25,18 +31,26 @@ export class ProductsComponent {
   loading = false;
   errors: string[] = [];
 
+  /* ================================
+     CREATE MODAL STATE
+  ================================== */
+
   showCreateModal = false;
 
   newName = '';
   newPrice = 0;
   newStock = 0;
 
-  createErrors: string[] = [];
   createLoading = false;
-  private createErrorTimeoutId?: number;
-
+  createErrors: string[] = [];
   createSuccess = false;
+
+  private createErrorTimeoutId?: number;
   private createSuccessTimeoutId?: number;
+
+  /* ================================
+     EDIT MODAL STATE
+  ================================== */
 
   showEditModal = false;
 
@@ -52,12 +66,36 @@ export class ProductsComponent {
   private editErrorTimeoutId?: number;
   private editSuccessTimeoutId?: number;
 
+  /* ================================
+     DELETE MODAL STATE
+  ================================== */
+
+  showDeleteModal = false;
+
+  deleteId = '';
+  deleteName = '';
+
+  deleteLoading = false;
+  deleteErrors: string[] = [];
+  deleteSuccess = false;
+
+  private deleteErrorTimeoutId?: number;
+  private deleteSuccessTimeoutId?: number;
+
+  /* ================================
+     CONSTRUCTOR
+  ================================== */
+
   constructor(
     private productsService: ProductsService,
     public authService: AuthService,
   ) {
     this.loadProducts();
   }
+
+  /* ================================
+     VIEW METHODS
+  ================================== */
 
   toggleViewMode(): void {
     this.viewMode = this.viewMode === 'admin' ? 'vendor' : 'admin';
@@ -68,6 +106,7 @@ export class ProductsComponent {
     page: number = this.page,
     limit: number = this.limit,
   ): void {
+
     this.loading = true;
     this.errors = [];
 
@@ -90,7 +129,12 @@ export class ProductsComponent {
       });
   }
 
+  /* ================================
+     CREATE METHODS
+  ================================== */
+
   createProduct(): void {
+
     this.createLoading = true;
     this.createErrors = [];
 
@@ -104,25 +148,18 @@ export class ProductsComponent {
         next: () => {
           this.createLoading = false;
           this.createSuccess = true;
+          this.loadProducts();
 
-          if (this.createSuccessTimeoutId) {
-            clearTimeout(this.createSuccessTimeoutId);
-          }
-
+          this.clearTimeout(this.createSuccessTimeoutId);
           this.createSuccessTimeoutId = window.setTimeout(() => {
             this.resetCreateModal();
           }, 5000);
-
-          this.loadProducts();
         },
         error: (err) => {
           this.createLoading = false;
           this.createErrors = this.parseErrors(err);
 
-          if (this.createErrorTimeoutId) {
-            clearTimeout(this.createErrorTimeoutId);
-          }
-
+          this.clearTimeout(this.createErrorTimeoutId);
           this.createErrorTimeoutId = window.setTimeout(() => {
             this.createErrors = [];
           }, 3000);
@@ -138,6 +175,117 @@ export class ProductsComponent {
     this.newStock = 0;
   }
 
+  /* ================================
+     EDIT METHODS
+  ================================== */
+
+  openEditModal(product: Product): void {
+    this.editId = product.id;
+    this.editName = product.name;
+    this.editPrice = product.price;
+    this.editStock = product.stock;
+
+    this.editErrors = [];
+    this.editSuccess = false;
+    this.showEditModal = true;
+  }
+
+  updateProduct(): void {
+
+    this.editLoading = true;
+    this.editErrors = [];
+
+    this.productsService
+      .updateProduct(this.editId, {
+        price: this.editPrice,
+        stock: this.editStock,
+      })
+      .subscribe({
+        next: () => {
+          this.editLoading = false;
+          this.editSuccess = true;
+          this.loadProducts();
+
+          this.clearTimeout(this.editSuccessTimeoutId);
+          this.editSuccessTimeoutId = window.setTimeout(() => {
+            this.resetEditModal();
+          }, 5000);
+        },
+        error: (err) => {
+          this.editLoading = false;
+          this.editErrors = this.parseErrors(err);
+
+          this.clearTimeout(this.editErrorTimeoutId);
+          this.editErrorTimeoutId = window.setTimeout(() => {
+            this.editErrors = [];
+          }, 3000);
+        },
+      });
+  }
+
+  resetEditModal(): void {
+    this.showEditModal = false;
+    this.editSuccess = false;
+    this.editId = '';
+    this.editName = '';
+    this.editPrice = 0;
+    this.editStock = 0;
+  }
+
+  /* ================================
+     DELETE METHODS
+  ================================== */
+
+  openDeleteModal(product: Product): void {
+    this.deleteId = product.id;
+    this.deleteName = product.name;
+
+    this.deleteErrors = [];
+    this.deleteSuccess = false;
+    this.showDeleteModal = true;
+  }
+
+  deleteProduct(): void {
+
+    this.deleteLoading = true;
+    this.deleteErrors = [];
+
+    this.productsService
+      .deleteProduct(this.deleteId)
+      .subscribe({
+        next: () => {
+          this.deleteLoading = false;
+          this.deleteSuccess = true;
+          this.loadProducts();
+
+          this.clearTimeout(this.deleteSuccessTimeoutId);
+          this.deleteSuccessTimeoutId = window.setTimeout(() => {
+            this.resetDeleteModal();
+          }, 5000);
+        },
+        error: (err) => {
+          this.deleteLoading = false;
+          this.deleteErrors = this.parseErrors(err);
+
+          this.clearTimeout(this.deleteErrorTimeoutId);
+          this.deleteErrorTimeoutId = window.setTimeout(() => {
+            this.deleteErrors = [];
+          }, 3000);
+        },
+      });
+  }
+
+  resetDeleteModal(): void {
+    this.showDeleteModal = false;
+    this.deleteSuccess = false;
+    this.deleteId = '';
+    this.deleteName = '';
+  }
+
+  /* ================================
+     PRIVATE UTILITIES
+  ================================== */
+
   private parseErrors(err: any): string[] {
     if (Array.isArray(err?.error?.details)) {
       return err.error.details.map((d: any) => d?.message).filter(Boolean);
@@ -151,65 +299,12 @@ export class ProductsComponent {
       return [err.error.error];
     }
 
-    return ['Failed to load products'];
+    return ['Unexpected error'];
   }
 
-  updateProduct(): void {
-    this.editLoading = true;
-    this.editErrors = [];
-
-    this.productsService
-      .updateProduct(this.editId, {
-        price: this.editPrice,
-        stock: this.editStock,
-      })
-      .subscribe({
-        next: () => {
-          this.editLoading = false;
-          this.editSuccess = true;
-
-          this.loadProducts();
-
-          if (this.editSuccessTimeoutId) {
-            clearTimeout(this.editSuccessTimeoutId);
-          }
-
-          this.editSuccessTimeoutId = window.setTimeout(() => {
-            this.resetEditModal();
-          }, 5000);
-        },
-        error: (err) => {
-          this.editLoading = false;
-          this.editErrors = this.parseErrors(err);
-
-          if (this.editErrorTimeoutId) {
-            clearTimeout(this.editErrorTimeoutId);
-          }
-
-          this.editErrorTimeoutId = window.setTimeout(() => {
-            this.editErrors = [];
-          }, 3000);
-        },
-      });
-  }
-
-  openEditModal(product: Product): void {
-    this.editId = product.id;
-    this.editName = product.name;
-    this.editPrice = product.price;
-    this.editStock = product.stock;
-
-    this.editErrors = [];
-    this.editSuccess = false;
-    this.showEditModal = true;
-  }
-
-  resetEditModal(): void {
-    this.showEditModal = false;
-    this.editSuccess = false;
-    this.editId = '';
-    this.editName = '';
-    this.editPrice = 0;
-    this.editStock = 0;
+  private clearTimeout(timeoutId?: number): void {
+    if (timeoutId) {
+      window.clearTimeout(timeoutId);
+    }
   }
 }
