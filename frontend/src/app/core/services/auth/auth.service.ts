@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, finalize, map, Observable, tap } from 'rxjs';
+import { BehaviorSubject, finalize, Observable, tap } from 'rxjs';
 import { AuthResponse } from '../../types/Auth';
+import { CartService } from '../sales/cart.service';
 
 @Injectable({
   providedIn: 'root',
@@ -20,7 +21,10 @@ export class AuthService {
   userNameChanges$ = this.userName$.asObservable();
   roleChanges$ = this.role$.asObservable();
 
-  constructor(private httpClient: HttpClient) {
+  constructor(
+    private httpClient: HttpClient,
+    private cartService: CartService,
+  ) {
     this.syncAuthState();
   }
 
@@ -48,7 +52,10 @@ export class AuthService {
     return this.httpClient
       .post<AuthResponse>(`${this.apiUrl}/login`, { email, password })
       .pipe(
-        tap((auth) => this.setSession(auth)),
+        tap((auth) => {
+          this.cartService.clearCart();
+          this.setSession(auth);
+        }),
       );
   }
 
@@ -57,16 +64,17 @@ export class AuthService {
       .post<AuthResponse>(`${this.apiUrl}/refresh`, {
         refreshToken: this.refreshToken,
       })
-      .pipe(
-        tap((auth) => this.setSession(auth)),
-      );
+      .pipe(tap((auth) => this.setSession(auth)));
   }
 
   logout(): Observable<void> {
     return this.httpClient
-      .post<void>(`${this.apiUrl}/logout`, { refreshToken: this.refreshToken, })
+      .post<void>(`${this.apiUrl}/logout`, {
+        refreshToken: this.refreshToken,
+      })
       .pipe(
         finalize(() => {
+          this.cartService.clearCart();
           this.clearSession();
         }),
       );
