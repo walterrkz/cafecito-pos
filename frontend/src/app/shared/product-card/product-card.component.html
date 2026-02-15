@@ -4,14 +4,16 @@
   </h3>
 
   <p class="product-price">
-    {{ product.price | currency: "MXN" : "symbol" : "1.2-2" }}
+    {{ product.price | currency: "USD" : "symbol" : "1.2-2" }}
   </p>
 
   <p class="product-stock">Stock: {{ product.stock }}</p>
 
   @if (isAuth && (!isAdmin || viewMode === "vendor")) {
     <div class="card-actions">
-      <button class="action-button primary">Add to Cart</button>
+      <button class="action-button primary" (click)="addToCart.emit(product)">
+        Add to Cart
+      </button>
     </div>
   }
 

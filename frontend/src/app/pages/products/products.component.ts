@@ -5,16 +5,17 @@ import { AuthService } from '../../core/services/auth/auth.service';
 import { ProductCardComponent } from '../../shared/product-card/product-card.component';
 import { FormsModule } from '@angular/forms';
 import { ModalComponent } from '../../shared/modal/modal.component';
+import { CartService } from '../../core/services/sales/cart.service';
+import { CurrencyPipe } from '@angular/common';
 
 @Component({
   selector: 'app-products',
-  imports: [FormsModule, ProductCardComponent, ModalComponent],
+  imports: [FormsModule, ProductCardComponent, ModalComponent, CurrencyPipe],
   templateUrl: './products.component.html',
   styleUrl: './products.component.css',
   standalone: true,
 })
 export class ProductsComponent {
-
   /* ================================
      VIEW STATE
   ================================== */
@@ -82,6 +83,18 @@ export class ProductsComponent {
   private deleteErrorTimeoutId?: number;
   private deleteSuccessTimeoutId?: number;
 
+/* ================================
+   CART MODAL STATE
+================================== */
+
+showCartModal = false;
+
+selectedProduct!: Product;
+selectedQuantity = 1;
+
+cartSuccess = false;
+private cartSuccessTimeoutId?: number;
+
   /* ================================
      CONSTRUCTOR
   ================================== */
@@ -89,6 +102,7 @@ export class ProductsComponent {
   constructor(
     private productsService: ProductsService,
     public authService: AuthService,
+    private cartService: CartService
   ) {
     this.loadProducts();
   }
@@ -106,7 +120,6 @@ export class ProductsComponent {
     page: number = this.page,
     limit: number = this.limit,
   ): void {
-
     this.loading = true;
     this.errors = [];
 
@@ -134,7 +147,6 @@ export class ProductsComponent {
   ================================== */
 
   createProduct(): void {
-
     this.createLoading = true;
     this.createErrors = [];
 
@@ -191,7 +203,6 @@ export class ProductsComponent {
   }
 
   updateProduct(): void {
-
     this.editLoading = true;
     this.editErrors = [];
 
@@ -246,33 +257,30 @@ export class ProductsComponent {
   }
 
   deleteProduct(): void {
-
     this.deleteLoading = true;
     this.deleteErrors = [];
 
-    this.productsService
-      .deleteProduct(this.deleteId)
-      .subscribe({
-        next: () => {
-          this.deleteLoading = false;
-          this.deleteSuccess = true;
-          this.loadProducts();
+    this.productsService.deleteProduct(this.deleteId).subscribe({
+      next: () => {
+        this.deleteLoading = false;
+        this.deleteSuccess = true;
+        this.loadProducts();
 
-          this.clearTimeout(this.deleteSuccessTimeoutId);
-          this.deleteSuccessTimeoutId = window.setTimeout(() => {
-            this.resetDeleteModal();
-          }, 5000);
-        },
-        error: (err) => {
-          this.deleteLoading = false;
-          this.deleteErrors = this.parseErrors(err);
+        this.clearTimeout(this.deleteSuccessTimeoutId);
+        this.deleteSuccessTimeoutId = window.setTimeout(() => {
+          this.resetDeleteModal();
+        }, 5000);
+      },
+      error: (err) => {
+        this.deleteLoading = false;
+        this.deleteErrors = this.parseErrors(err);
 
-          this.clearTimeout(this.deleteErrorTimeoutId);
-          this.deleteErrorTimeoutId = window.setTimeout(() => {
-            this.deleteErrors = [];
-          }, 3000);
-        },
-      });
+        this.clearTimeout(this.deleteErrorTimeoutId);
+        this.deleteErrorTimeoutId = window.setTimeout(() => {
+          this.deleteErrors = [];
+        }, 3000);
+      },
+    });
   }
 
   resetDeleteModal(): void {
@@ -281,6 +289,55 @@ export class ProductsComponent {
     this.deleteId = '';
     this.deleteName = '';
   }
+
+  /* ================================
+     ADD TO CART METHODS
+  ================================== */
+
+openCartModal(product: Product): void {
+  this.selectedProduct = product;
+
+  const existing = this.cartService.getItem(product.id);
+
+  this.selectedQuantity = existing ? existing.quantity : 1;
+
+  this.showCartModal = true;
+}
+
+increaseQuantity(): void {
+  if (this.selectedQuantity < this.selectedProduct.stock) {
+    this.selectedQuantity++;
+  }
+}
+
+decreaseQuantity(): void {
+  if (this.selectedQuantity > 1) {
+    this.selectedQuantity--;
+  }
+}
+
+confirmAddToCart(): void {
+  if (!this.selectedProduct) return;
+
+  this.cartService.setQuantity(
+    this.selectedProduct,
+    this.selectedQuantity
+  );
+
+  this.cartSuccess = true;
+
+  this.clearTimeout(this.cartSuccessTimeoutId);
+
+  this.cartSuccessTimeoutId = window.setTimeout(() => {
+    this.resetCartModal();
+  }, 5000);
+}
+
+resetCartModal(): void {
+  this.showCartModal = false;
+  this.cartSuccess = false;
+  this.selectedQuantity = 1;
+}
 
   /* ================================
      PRIVATE UTILITIES

@@ -17,4 +17,5 @@ export class ProductCardComponent {
 
   @Output() edit = new EventEmitter<Product>();
   @Output() delete = new EventEmitter<Product>();
+  @Output() addToCart = new EventEmitter<Product>();
 }

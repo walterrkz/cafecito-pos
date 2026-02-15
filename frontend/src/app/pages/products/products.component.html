@@ -72,6 +72,7 @@
             [viewMode]="viewMode"
             (edit)="openEditModal($event)"
             (delete)="openDeleteModal($event)"
+            (addToCart)="openCartModal($event)"
           ></app-product-card>
         }
       </div>
@@ -212,6 +213,92 @@
     } @else {
       <div class="success-screen" (click)="resetDeleteModal()">
         <h3>Product deleted successfully</h3>
+        <p>Click anywhere to close</p>
+      </div>
+    }
+  </app-modal>
+}
+
+@if (showCartModal && selectedProduct) {
+  <app-modal (close)="resetCartModal()">
+    @if (!cartSuccess) {
+      <h3>Add to Cart</h3>
+
+      <p class="modal-id">ID: {{ selectedProduct.id }}</p>
+
+      <div class="product-summary">
+        <p class="product-name">
+          {{ selectedProduct.name }}
+        </p>
+
+        <p class="product-price">
+          {{ selectedProduct.price | currency: "USD" : "symbol" : "1.2-2" }}
+        </p>
+
+        <p class="product-stock">
+          Available stock: {{ selectedProduct.stock }}
+        </p>
+      </div>
+
+      <div class="form-group">
+        <div class="quantity-row">
+          <label>Quantity</label>
+
+          <div class="quantity-control">
+            <button
+              type="button"
+              (click)="selectedQuantity = selectedQuantity - 1"
+              [disabled]="selectedQuantity <= 1"
+            >
+              −
+            </button>
+
+            <input
+              type="number"
+              [(ngModel)]="selectedQuantity"
+              min="1"
+              [max]="selectedProduct.stock"
+            />
+
+            <button
+              type="button"
+              (click)="selectedQuantity = selectedQuantity + 1"
+              [disabled]="selectedQuantity >= selectedProduct.stock"
+            >
+              +
+            </button>
+          </div>
+        </div>
+
+        @if (selectedQuantity < 1 || selectedQuantity > selectedProduct.stock) {
+          <div class="error-box">
+            <p class="error-message">
+              @if (selectedQuantity < 1) {
+                Minimum quantity is 1
+              } @else {
+                Only {{ selectedProduct.stock }} available in stock
+              }
+            </p>
+          </div>
+        }
+      </div>
+
+      <div class="modal-actions">
+        <button
+          class="primary"
+          (click)="confirmAddToCart()"
+          [disabled]="
+            selectedQuantity < 1 || selectedQuantity > selectedProduct.stock
+          "
+        >
+          Confirm
+        </button>
+
+        <button (click)="resetCartModal()">Cancel</button>
+      </div>
+    } @else {
+      <div class="success-screen" (click)="resetCartModal()">
+        <h3>Product added to cart successfully</h3>
         <p>Click anywhere to close</p>
       </div>
     }

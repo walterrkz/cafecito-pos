@@ -197,3 +197,95 @@
   font-size: 0.85rem;
   color: #047857;
 }
+
+.product-summary {
+  margin-bottom: 1.5rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.product-name {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 0.35rem 0;
+}
+
+.product-price {
+  font-size: 0.95rem;
+  color: var(--color-primary);
+  margin: 0 0 0.25rem 0;
+}
+
+.product-stock {
+  font-size: 0.8rem;
+  color: var(--color-muted);
+  margin: 0;
+}
+
+.quantity-control {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.quantity-control button {
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.quantity-control button:hover:not(:disabled) {
+  border-color: var(--color-primary);
+}
+
+.quantity-control button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.quantity-control input {
+  width: 70px;
+  text-align: center;
+  padding: 0.6rem 0.5rem;
+  border-radius: 6px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  font-size: 0.9rem;
+}
+
+.quantity-control input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.quantity-error {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: #b91c1c;
+  text-align: center;
+}
+
+.modal-actions {
+  margin-top: 1.75rem;
+}
+
+.quantity-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.quantity-row label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-text);
+}

@@ -1,29 +1,49 @@
 <aside class="sidebar">
-  <h1>Cafecito</h1>
+  <h1 class="sidebar-title">Cafecito</h1>
 
   @if (isAuth$ | async) {
-
     <div class="sidebar-header">
-      <p>Bienvenido, {{ userName$ | async }}</p>
+      <p class="welcome-text">
+        Welcome, {{ userName$ | async }}
+      </p>
+
+      <div class="cart-container">
+        <span class="cart-label">View Cart</span>
+
+        <div class="cart-icon-wrapper">
+          <svg
+            class="cart-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path
+              d="M7 4h-2l-1 2h2l3.6 7.59-1.35 2.44C7.52 17.37 8.48 19 10 19h9v-2h-9l1.1-2h6.45c.75 0 1.41-.41 1.75-1.03L23 6H6.21l-.94-2zM7 21a2 2 0 100-4 2 2 0 000 4zm10 0a2 2 0 100-4 2 2 0 000 4z"
+            />
+          </svg>
+
+          @if (cartCount$ | async; as count) {
+            @if (count > 0) {
+              <span class="cart-badge">
+                {{ count }}
+              </span>
+            }
+          }
+        </div>
+      </div>
     </div>
 
-    <nav>
-      <a routerLink="/products">Productos</a>
-    </nav>
-
-    <nav>
-      <a routerLink="/customers">Clientes</a>
+    <nav class="sidebar-nav">
+      <a routerLink="/products">Products</a>
+      <a routerLink="/customers">Customers</a>
     </nav>
 
     <button class="logout-btn" (click)="logout()">
       Logout
     </button>
-
   } @else {
-
-    <nav>
+    <nav class="sidebar-nav">
       <a routerLink="/login">Login</a>
     </nav>
-
   }
 </aside>
