@@ -3,11 +3,9 @@
 
   @if (isAuth$ | async) {
     <div class="sidebar-header">
-      <p class="welcome-text">
-        Welcome, {{ userName$ | async }}
-      </p>
+      <p class="welcome-text">Welcome, {{ userName$ | async }}</p>
 
-      <div class="cart-container">
+      <a class="cart-container" routerLink="/cart">
         <span class="cart-label">View Cart</span>
 
         <div class="cart-icon-wrapper">
@@ -30,17 +28,16 @@
             }
           }
         </div>
-      </div>
+      </a>
     </div>
 
     <nav class="sidebar-nav">
       <a routerLink="/products">Products</a>
       <a routerLink="/customers">Customers</a>
+      <a routerLink="/sales">Sales</a>
     </nav>
 
-    <button class="logout-btn" (click)="logout()">
-      Logout
-    </button>
+    <button class="logout-btn" (click)="logout()">Logout</button>
   } @else {
     <nav class="sidebar-nav">
       <a routerLink="/login">Login</a>

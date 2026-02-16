@@ -2,7 +2,7 @@ import { Router } from "express";
 import { body } from "express-validator";
 import auth_middleware from "../middlewares/auth_middleware.js";
 import validate from "../middlewares/validation.js";
-import { create_sale } from "../controllers/sales_controller.js";
+import { create_sale, get_sales, get_sale_by_id } from "../controllers/sales_controller.js";
 
 const router = Router();
 
@@ -42,5 +42,9 @@ router.post(
   validate,
   create_sale,
 );
+
+
+router.get("/", auth_middleware, get_sales);
+router.get("/:id", auth_middleware, get_sale_by_id);
 
 export default router;

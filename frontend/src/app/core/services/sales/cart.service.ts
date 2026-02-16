@@ -58,13 +58,18 @@ export class CartService {
     customerId?: string,
     paymentMethod: 'cash' | 'card' | 'transfer' = 'cash',
   ): SalePayload {
-    return {
-      customerId: customerId ?? null,
+    const payload: SalePayload = {
       paymentMethod,
       items: this.cartItems$.value.map((item) => ({
         productId: item.productId,
         quantity: item.quantity,
       })),
     };
+
+    if (customerId) {
+      payload.customerId = customerId;
+    }
+
+    return payload;
   }
 }

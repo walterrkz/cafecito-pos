@@ -1,0 +1,46 @@
+.sale-detail-wrapper {
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.sale-detail-wrapper h2 {
+  margin-bottom: 1.5rem;
+}
+
+.sale-detail-wrapper h3 {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+.state-message {
+  font-size: 0.95rem;
+  color: var(--color-muted);
+}
+
+.ticket-block {
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 1.5rem;
+  background: var(--color-surface);
+  margin-top: 1.5rem;
+}
+
+.ticket-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.ticket-summary {
+  margin-top: 1rem;
+}
+
+.ticket-summary p {
+  margin: 0.4rem 0;
+}
+
+.ticket-summary h3 {
+  margin-top: 1rem;
+}

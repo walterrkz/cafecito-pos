@@ -182,4 +182,90 @@ async function create_sale(req, res, next) {
   }
 }
 
-export { create_sale };
+async function get_sales(req, res, next) {
+  try {
+    const sales = await Sale.find()
+      .sort({ createdAt: -1 })
+      .populate("customer_id", "name")
+      .select("_id customer_id payment_method total createdAt");
+
+    const formatted = sales.map((sale) => ({
+      saleId: sale._id.toString(),
+      customerName: sale.customer_id
+        ? sale.customer_id.name
+        : null,
+      paymentMethod: sale.payment_method,
+      total: sale.total,
+      createdAt: sale.createdAt,
+    }));
+
+    return res.status(200).json(formatted);
+
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function get_sale_by_id(req, res, next) {
+  try {
+    const { id } = req.params;
+
+    const sale = await Sale.findById(id);
+
+    if (!sale) {
+      return res.status(404).json({
+        error: "Sale not found",
+        id,
+      });
+    }
+
+    const obj = sale.toObject();
+
+    const ticket = {
+      saleId: obj._id.toString(),
+      timestamp: obj.createdAt,
+      storeName: "Cafecito Feliz",
+      items: obj.items.map((i) => ({
+        name: i.product_name,
+        qty: i.quantity,
+        unitPrice: i.unit_price,
+        lineTotal: i.line_total,
+      })),
+      subtotal: obj.subtotal,
+      discount:
+        obj.discount_percent > 0
+          ? `${obj.discount_percent}% (-$${obj.discount_amount})`
+          : "0%",
+      total: obj.total,
+      paymentMethod: obj.payment_method,
+    };
+
+    return res.status(200).json({
+      saleId: obj._id.toString(),
+      customerId: obj.customer_id
+        ? obj.customer_id.toString()
+        : null,
+      paymentMethod: obj.payment_method,
+      items: obj.items.map((i) => ({
+        productId: i.product_id.toString(),
+        productName: i.product_name,
+        quantity: i.quantity,
+        unitPrice: i.unit_price,
+        lineTotal: i.line_total,
+      })),
+      subtotal: obj.subtotal,
+      discountPercent: obj.discount_percent,
+      discountAmount: obj.discount_amount,
+      total: obj.total,
+      ticket,
+      createdAt: obj.createdAt,
+    });
+
+  } catch (error) {
+    next(error);
+  }
+}
+
+
+export { create_sale, get_sales, get_sale_by_id };
+

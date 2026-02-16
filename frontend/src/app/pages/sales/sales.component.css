@@ -1,0 +1,62 @@
+.sales-wrapper {
+  padding: 2rem;
+}
+
+.sales-wrapper h2 {
+  margin-bottom: 1.5rem;
+}
+
+.state-message {
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  color: var(--color-muted);
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.sales-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.sales-table thead {
+  background: #f3f4f6;
+}
+
+.sales-table th,
+.sales-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-size: 0.9rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.sales-table th {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--color-muted);
+}
+
+.sales-table tbody tr:hover {
+  background: #f9fafb;
+}
+
+button.primary {
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button.primary:hover {
+  opacity: 0.9;
+}

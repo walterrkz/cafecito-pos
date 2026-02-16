@@ -1,1 +1,246 @@
-<p>cart works!</p>
+<section class="cart-wrapper">
+  <h2>Shopping Cart</h2>
+
+  @if (items.length === 0) {
+    <p class="state-message">Your cart is empty</p>
+  } @else {
+    <p class="results-info">{{ items.length }} item(s) in cart</p>
+
+    <div class="table-wrapper">
+      <table class="cart-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Product</th>
+            <th>Unit Price</th>
+            <th>Quantity</th>
+            <th>Subtotal</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (item of items; track item.productId; let i = $index) {
+            <tr>
+              <td>{{ i + 1 }}</td>
+
+              <td>{{ item.productName }}</td>
+
+              <td>
+                {{ item.unitPrice | currency: "USD" : "symbol" : "1.2-2" }}
+              </td>
+
+              <td>
+                {{ item.quantity }}
+              </td>
+
+              <td>
+                {{
+                  item.unitPrice * item.quantity
+                    | currency: "USD" : "symbol" : "1.2-2"
+                }}
+              </td>
+
+              <td>
+                <button
+                  class="action-button danger"
+                  (click)="remove(item.productId)"
+                >
+                  Remove
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="customer-section">
+      <div class="customer-toggle">
+        <span>Customer:</span>
+
+        <button
+          class="toggle-button"
+          [class.active]="customerEnabled"
+          (click)="toggleCustomer()"
+        >
+          {{ customerEnabled ? "Yes" : "No" }}
+        </button>
+      </div>
+
+      @if (customerEnabled) {
+        <div class="filters">
+          <div class="filter-group search-group">
+            <label>Search</label>
+            <input
+              type="text"
+              [(ngModel)]="customerSearch"
+              (input)="loadCustomers()"
+            />
+          </div>
+        </div>
+
+        @if (customersLoading) {
+          <p class="state-message">Loading customers...</p>
+        }
+
+        @if (customersErrors.length && !customersLoading) {
+          <div class="error-box">
+            @for (error of customersErrors; track error) {
+              <p class="error-message">{{ error }}</p>
+            }
+          </div>
+        }
+
+        @if (
+          !customersLoading && customers.length === 0 && !customersErrors.length
+        ) {
+          <p class="state-message">No customers found</p>
+        }
+
+        @if (!customersLoading && customers.length > 0) {
+          <div class="customer-list">
+            @for (customer of customers; track customer.id) {
+              <div
+                class="customer-item"
+                [class.selected]="selectedCustomerId === customer.id"
+                (click)="selectedCustomerId = customer.id"
+              >
+                <span class="customer-name">
+                  {{ customer.name }}
+                </span>
+
+                <span class="customer-meta">
+                  {{ customer.phoneOrEmail }}
+                </span>
+              </div>
+            }
+          </div>
+        }
+      }
+    </div>
+
+    @if (items.length > 0) {
+      <div class="payment-section">
+        <div class="payment-header">
+          <span>Payment Method:</span>
+        </div>
+
+        <div class="payment-options">
+          <div
+            class="payment-option"
+            [class.selected]="paymentMethod === 'cash'"
+            (click)="paymentMethod = 'cash'"
+          >
+            Cash
+          </div>
+
+          <div
+            class="payment-option"
+            [class.selected]="paymentMethod === 'card'"
+            (click)="paymentMethod = 'card'"
+          >
+            Card
+          </div>
+
+          <div
+            class="payment-option"
+            [class.selected]="paymentMethod === 'transfer'"
+            (click)="paymentMethod = 'transfer'"
+          >
+            Transfer
+          </div>
+        </div>
+      </div>
+    }
+
+    <div class="cart-summary">
+      <h3>
+        Total:
+        {{ totalAmount | currency: "USD" : "symbol" : "1.2-2" }}
+      </h3>
+
+      <div class="summary-actions">
+        <button class="primary" routerLink="/products">
+          Continue Shopping
+        </button>
+
+        <button class="danger" (click)="clear()">Clear Cart</button>
+
+        <button
+          class="primary"
+          (click)="completeSale()"
+          [disabled]="saleLoading || items.length === 0"
+        >
+          {{ saleLoading ? "Processing..." : "Complete Sale" }}
+        </button>
+      </div>
+    </div>
+    @if (saleErrors.length) {
+  <div class="error-box">
+    @for (error of saleErrors; track error) {
+      <p class="error-message">{{ error }}</p>
+    }
+  </div>
+}
+
+@if (saleSuccess) {
+  <div class="success-screen">
+    <h3>Sale completed successfully</h3>
+  </div>
+}
+  }
+</section>
+
+@if (showTicketModal && createdSale) {
+  <app-modal (close)="closeTicket()">
+
+    <div class="ticket-container">
+
+      <h3>Sale Ticket</h3>
+
+      <p><strong>Sale ID:</strong> {{ createdSale.saleId }}</p>
+      <p><strong>Date:</strong> {{ createdSale.createdAt }}</p>
+      <p><strong>Payment:</strong> {{ createdSale.paymentMethod }}</p>
+
+      <div class="ticket-items">
+        @for (item of createdSale.items; track item.productId) {
+          <div class="ticket-item">
+            <span>{{ item.productName }}</span>
+            <span>
+              {{ item.quantity }} ×
+              {{ item.unitPrice | currency:'USD':'symbol':'1.2-2' }}
+            </span>
+            <span>
+              {{ item.lineTotal | currency:'USD':'symbol':'1.2-2' }}
+            </span>
+          </div>
+        }
+      </div>
+
+      <hr />
+
+      <p><strong>Subtotal:</strong>
+        {{ createdSale.subtotal | currency:'USD':'symbol':'1.2-2' }}
+      </p>
+
+      <p><strong>Discount:</strong>
+        {{ createdSale.discountPercent }}%
+        ({{ createdSale.discountAmount | currency:'USD':'symbol':'1.2-2' }})
+      </p>
+
+      <h4><strong>Total:</strong>
+        {{ createdSale.total | currency:'USD':'symbol':'1.2-2' }}
+      </h4>
+
+      <div class="modal-actions">
+        <button class="primary" (click)="closeTicket()">
+          Close
+        </button>
+      </div>
+
+    </div>
+
+  </app-modal>
+}
+

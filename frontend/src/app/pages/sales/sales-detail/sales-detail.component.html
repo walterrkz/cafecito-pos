@@ -1,0 +1,59 @@
+<section class="sale-detail-wrapper">
+
+  @if (!sale) {
+    <p class="state-message">Loading sale...</p>
+  }
+
+  @if (sale) {
+
+    <h2>Sale Detail</h2>
+
+    <p><strong>Sale ID:</strong> {{ sale.saleId }}</p>
+    <p><strong>Date:</strong> {{ sale.createdAt | date:'medium' }}</p>
+    <p><strong>Payment:</strong> {{ sale.paymentMethod }}</p>
+    <p><strong>Customer:</strong> {{ sale.customerId || 'Guest' }}</p>
+
+    <div class="ticket-block">
+
+      <h3>Items</h3>
+
+      @for (item of sale.items; track item.productId) {
+        <div class="ticket-item">
+          <span>
+            {{ item.productName }} ({{ item.quantity }} ×
+            {{ item.unitPrice | currency:'USD':'symbol':'1.2-2' }})
+          </span>
+
+          <span>
+            {{ item.lineTotal | currency:'USD':'symbol':'1.2-2' }}
+          </span>
+        </div>
+      }
+
+      <hr />
+
+      <div class="ticket-summary">
+
+        <p>
+          Subtotal:
+          {{ sale.subtotal | currency:'USD':'symbol':'1.2-2' }}
+        </p>
+
+        <p>
+          Discount:
+          {{ sale.discountPercent }}%
+          ({{ sale.discountAmount | currency:'USD':'symbol':'1.2-2' }})
+        </p>
+
+        <h3>
+          Total:
+          {{ sale.total | currency:'USD':'symbol':'1.2-2' }}
+        </h3>
+
+      </div>
+
+    </div>
+
+  }
+
+</section>

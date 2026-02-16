@@ -1,0 +1,53 @@
+<section class="sales-wrapper">
+  <h2>Sales</h2>
+
+  @if (loading) {
+    <p class="state-message">Loading sales...</p>
+  }
+
+  @if (!loading && sales.length === 0) {
+    <p class="state-message">No sales found</p>
+  }
+
+  @if (!loading && sales.length > 0) {
+
+    <div class="table-wrapper">
+      <table class="sales-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Sale ID</th>
+            <th>Customer</th>
+            <th>Payment</th>
+            <th>Total</th>
+            <th>Date</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (sale of sales; track sale.saleId; let i = $index) {
+            <tr>
+              <td>{{ i + 1 }}</td>
+              <td>{{ sale.saleId }}</td>
+              <td>{{ sale.customerName || 'Guest' }}</td>
+              <td>{{ sale.paymentMethod }}</td>
+              <td>{{ sale.total | currency:'USD':'symbol':'1.2-2' }}</td>
+              <td>{{ sale.createdAt | date:'short' }}</td>
+              <td>
+                <button
+                  class="primary"
+                  (click)="viewDetail(sale.saleId)"
+                >
+                  View Detail
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+  }
+
+</section>

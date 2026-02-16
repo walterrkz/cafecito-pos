@@ -5,6 +5,9 @@ import { loginGuard } from './core/guards/login/login.guard';
 import { CustomersComponent } from './pages/customers/customers.component';
 import { authGuard } from './core/guards/auth/auth.guard';
 import { CustomerDetailComponent } from './pages/customers/customer-detail/customer-detail.component';
+import { CartComponent } from './pages/cart/cart.component';
+import { SalesComponent } from './pages/sales/sales.component';
+import { SalesDetailComponent } from './pages/sales/sales-detail/sales-detail.component';
 
 export const routes: Routes = [
   {
@@ -21,11 +24,26 @@ export const routes: Routes = [
     component: CustomersComponent,
     canActivate:[authGuard]
   },
+    {
+    path: 'cart',
+    component: CartComponent,
+    canActivate:[authGuard]
+  },
   {
   path: 'customers/:id',
   component: CustomerDetailComponent,
   canActivate: [authGuard],
 },
+  {
+    path: 'sales',
+    component: SalesComponent,
+    canActivate:[authGuard]
+  },
+  {
+    path: 'sales/:id',
+    component: SalesDetailComponent,
+    canActivate:[authGuard]
+  },
   {
     path: '',
     redirectTo: 'products',
